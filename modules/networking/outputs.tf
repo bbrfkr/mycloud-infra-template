@@ -13,3 +13,7 @@ output "subnet_id" {
 output "subnet_name" {
   value = openstack_networking_subnet_v2.subnet.name
 }
+
+output "subnet_cidr" {
+  value = openstack_networking_subnet_v2.subnet.cidr
+}
