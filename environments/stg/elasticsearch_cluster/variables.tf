@@ -9,3 +9,7 @@ variable "master_flavor_id" {
 variable "data_flavor_id" {
   type = string
 }
+
+variable "cluster_name" {
+  type = string
+}
