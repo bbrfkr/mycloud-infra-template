@@ -18,14 +18,14 @@ resource "openstack_networking_floatingip_v2" "bastion_fip" {
 }
 
 resource "openstack_networking_port_v2" "bastion_port" {
-  network_id = var.network_id
+  network_id         = var.network_id
   security_group_ids = [openstack_networking_secgroup_v2.bastion_sg.id]
 }
 
 resource "openstack_compute_instance_v2" "bastion_instance" {
-  name            = "${var.environment_name}-bastion"
-  flavor_id       = var.flavor_id
-  key_pair        = var.key_pair_name
+  name      = "${var.environment_name}-bastion"
+  flavor_id = var.flavor_id
+  key_pair  = var.key_pair_name
   block_device {
     uuid                  = var.image_id
     source_type           = "image"
@@ -41,5 +41,5 @@ resource "openstack_compute_instance_v2" "bastion_instance" {
 
 resource "openstack_networking_floatingip_associate_v2" "bastion_fip_associate" {
   floating_ip = openstack_networking_floatingip_v2.bastion_fip.address
-  port_id = openstack_networking_port_v2.bastion_port.id
+  port_id     = openstack_networking_port_v2.bastion_port.id
 }

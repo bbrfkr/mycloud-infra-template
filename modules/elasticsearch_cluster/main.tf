@@ -1,28 +1,28 @@
 resource "openstack_lb_loadbalancer_v2" "master_lb" {
-  vip_subnet_id = var.subnet_id
-  name = "${var.environment_name}-elasticsearch-master-lb"
+  vip_subnet_id         = var.subnet_id
+  name                  = "${var.environment_name}-elasticsearch-master-lb"
   loadbalancer_provider = "octavia"
-  security_group_ids = [openstack_networking_secgroup_v2.master_lb_sg.id]
+  security_group_ids    = [openstack_networking_secgroup_v2.master_lb_sg.id]
 }
 
 resource "openstack_lb_listener_v2" "master_listener" {
   loadbalancer_id = openstack_lb_loadbalancer_v2.master_lb.id
-  protocol = "TCP"
-  protocol_port = 80
+  protocol        = "TCP"
+  protocol_port   = 80
 }
 
 resource "openstack_lb_pool_v2" "master_pool" {
   listener_id = openstack_lb_listener_v2.master_listener.id
-  lb_method = "LEAST_CONNECTIONS"
-  protocol = "TCP"
+  lb_method   = "LEAST_CONNECTIONS"
+  protocol    = "TCP"
 }
 
 resource "openstack_lb_member_v2" "master_member" {
-  for_each = openstack_networking_port_v2.master_ports
-  address = each.value.all_fixed_ips[0]
-  pool_id = openstack_lb_pool_v2.master_pool.id
+  for_each      = openstack_networking_port_v2.master_ports
+  address       = each.value.all_fixed_ips[0]
+  pool_id       = openstack_lb_pool_v2.master_pool.id
   protocol_port = 9200
-  subnet_id = var.subnet_id
+  subnet_id     = var.subnet_id
 }
 
 resource "openstack_dns_zone_v2" "zone" {
@@ -44,7 +44,7 @@ resource "openstack_dns_recordset_v2" "master_lb_rs" {
 
 resource "openstack_networking_secgroup_v2" "master_lb_sg" {
   name        = "${var.environment_name}-elasticsearch-master-lb-sg"
-  description = "${var.environment_name}-elasticsearch-master-lb-sg"    
+  description = "${var.environment_name}-elasticsearch-master-lb-sg"
 }
 
 resource "openstack_networking_secgroup_rule_v2" "master_lb_sg_rule_1" {
@@ -59,7 +59,7 @@ resource "openstack_networking_secgroup_rule_v2" "master_lb_sg_rule_1" {
 
 resource "openstack_networking_secgroup_v2" "master_sg" {
   name        = "${var.environment_name}-elasticsearch-master-sg"
-  description = "${var.environment_name}-elasticsearch-master-sg"  
+  description = "${var.environment_name}-elasticsearch-master-sg"
 }
 
 resource "openstack_networking_secgroup_rule_v2" "master_sg_rule_1" {
@@ -93,22 +93,22 @@ resource "openstack_networking_secgroup_rule_v2" "master_sg_rule_91" {
 }
 
 resource "openstack_networking_port_v2" "master_ports" {
-  for_each = toset([for index in range(var.master_count) : tostring(index)])
-  network_id = var.network_id
+  for_each           = toset([for index in range(var.master_count) : tostring(index)])
+  network_id         = var.network_id
   security_group_ids = [openstack_networking_secgroup_v2.master_sg.id]
 }
 
 resource "openstack_blockstorage_volume_v3" "master_volumes" {
   for_each = toset([for index in range(var.master_count) : tostring(index)])
-  name        = "elasticsearch-master-${each.value}"
-  size        = var.master_volume_size
+  name     = "elasticsearch-master-${each.value}"
+  size     = var.master_volume_size
 }
 
 resource "openstack_compute_instance_v2" "masters" {
-  for_each = openstack_networking_port_v2.master_ports
-  name = "${var.environment_name}-elasticsearch-master-${each.key}"
+  for_each  = openstack_networking_port_v2.master_ports
+  name      = "${var.environment_name}-elasticsearch-master-${each.key}"
   flavor_id = var.master_flavor_id
-  key_pair = var.key_pair_name
+  key_pair  = var.key_pair_name
   network {
     port = each.value.id
   }
@@ -176,7 +176,7 @@ EOS
 
 resource "openstack_networking_secgroup_v2" "data_sg" {
   name        = "${var.environment_name}-elasticsearch-data-sg"
-  description = "${var.environment_name}-elasticsearch-data-sg"  
+  description = "${var.environment_name}-elasticsearch-data-sg"
 }
 
 resource "openstack_networking_secgroup_rule_v2" "data_sg_rule_1" {
@@ -210,22 +210,22 @@ resource "openstack_networking_secgroup_rule_v2" "data_sg_rule_91" {
 }
 
 resource "openstack_networking_port_v2" "data_ports" {
-  for_each = toset([for index in range(var.data_count) : tostring(index)])
-  network_id = var.network_id
+  for_each           = toset([for index in range(var.data_count) : tostring(index)])
+  network_id         = var.network_id
   security_group_ids = [openstack_networking_secgroup_v2.data_sg.id]
 }
 
 resource "openstack_blockstorage_volume_v3" "data_volumes" {
   for_each = toset([for index in range(var.data_count) : tostring(index)])
-  name        = "elasticsearch-data-${each.value}"
-  size        = var.data_volume_size
+  name     = "elasticsearch-data-${each.value}"
+  size     = var.data_volume_size
 }
 
 resource "openstack_compute_instance_v2" "data" {
-  for_each = openstack_networking_port_v2.data_ports
-  name = "${var.environment_name}-elasticsearch-data-${each.key}"
+  for_each  = openstack_networking_port_v2.data_ports
+  name      = "${var.environment_name}-elasticsearch-data-${each.key}"
   flavor_id = var.data_flavor_id
-  key_pair = var.key_pair_name
+  key_pair  = var.key_pair_name
   network {
     port = each.value.id
   }

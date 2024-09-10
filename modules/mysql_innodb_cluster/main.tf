@@ -8,16 +8,16 @@ resource "openstack_dns_zone_v2" "zone" {
 
 resource "openstack_dns_recordset_v2" "node_record_sets" {
   for_each = openstack_networking_port_v2.node_ports
-  zone_id     = openstack_dns_zone_v2.zone.id
-  name        = "node-${each.key}.mysql-${var.environment_name}.dynamis.bbrfkr.net."
-  ttl         = 600
-  type        = "A"
-  records     = [each.value.all_fixed_ips[0]]
+  zone_id  = openstack_dns_zone_v2.zone.id
+  name     = "node-${each.key}.mysql-${var.environment_name}.dynamis.bbrfkr.net."
+  ttl      = 600
+  type     = "A"
+  records  = [each.value.all_fixed_ips[0]]
 }
 
 resource "openstack_networking_secgroup_v2" "node_sg" {
   name        = "${var.environment_name}-mysql-nodes-sg"
-  description = "${var.environment_name}-mysql-nodes-sg"  
+  description = "${var.environment_name}-mysql-nodes-sg"
 }
 
 resource "openstack_networking_secgroup_rule_v2" "node_sg_rule_1" {
@@ -40,6 +40,16 @@ resource "openstack_networking_secgroup_rule_v2" "node_sg_rule_2" {
   security_group_id = openstack_networking_secgroup_v2.node_sg.id
 }
 
+resource "openstack_networking_secgroup_rule_v2" "node_sg_rule_3" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 33062
+  port_range_max    = 33062
+  remote_ip_prefix  = var.subnet_cidr
+  security_group_id = openstack_networking_secgroup_v2.node_sg.id
+}
+
 resource "openstack_networking_secgroup_rule_v2" "node_sg_rule_91" {
   direction         = "ingress"
   ethertype         = "IPv4"
@@ -51,22 +61,22 @@ resource "openstack_networking_secgroup_rule_v2" "node_sg_rule_91" {
 }
 
 resource "openstack_networking_port_v2" "node_ports" {
-  for_each = toset([for index in range(var.node_count) : tostring(index)])
-  network_id = var.network_id
+  for_each           = toset([for index in range(var.node_count) : tostring(index)])
+  network_id         = var.network_id
   security_group_ids = [openstack_networking_secgroup_v2.node_sg.id]
 }
 
 resource "openstack_blockstorage_volume_v3" "node_data_volumes" {
   for_each = toset([for index in range(var.node_count) : tostring(index)])
-  name        = "mysql-data-${each.value}"
-  size        = var.data_volume_size
+  name     = "mysql-data-${each.value}"
+  size     = var.data_volume_size
 }
 
 resource "openstack_compute_instance_v2" "nodes" {
-  for_each = openstack_networking_port_v2.node_ports
-  name = "${var.environment_name}-mysql-${each.key}"
+  for_each  = openstack_networking_port_v2.node_ports
+  name      = "${var.environment_name}-mysql-${each.key}"
   flavor_id = var.flavor_id
-  key_pair = var.key_pair_name
+  key_pair  = var.key_pair_name
   network {
     port = each.value.id
   }
@@ -100,6 +110,71 @@ mount -a
 
 # install mysql
 apt-get update
-apt-get install -y mysql-server
+apt-get install -y mysql-server mysql-shell
+EOS
+}
+
+resource "openstack_dns_recordset_v2" "proxysql_record_set" {
+  zone_id = openstack_dns_zone_v2.zone.id
+  name    = "proxysql.mysql-${var.environment_name}.dynamis.bbrfkr.net."
+  ttl     = 600
+  type    = "A"
+  records = [openstack_networking_port_v2.proxysql_port.all_fixed_ips[0]]
+}
+
+resource "openstack_networking_secgroup_v2" "proxysql_sg" {
+  name        = "${var.environment_name}-mysql-proxysql-sg"
+  description = "${var.environment_name}-mysql-proxysql-sg"
+}
+
+resource "openstack_networking_secgroup_rule_v2" "proxysql_sg_rule_1" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 3306
+  port_range_max    = 3306
+  remote_ip_prefix  = var.subnet_cidr
+  security_group_id = openstack_networking_secgroup_v2.proxysql_sg.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "proxysql_sg_rule_91" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 22
+  port_range_max    = 22
+  remote_group_id   = var.bastion_sg_id
+  security_group_id = openstack_networking_secgroup_v2.proxysql_sg.id
+}
+
+resource "openstack_networking_port_v2" "proxysql_port" {
+  network_id         = var.network_id
+  security_group_ids = [openstack_networking_secgroup_v2.proxysql_sg.id]
+}
+
+resource "openstack_compute_instance_v2" "proxysql" {
+  name      = "${var.environment_name}-proxysql"
+  flavor_id = var.flavor_id
+  key_pair  = var.key_pair_name
+  network {
+    port = openstack_networking_port_v2.proxysql_port.id
+  }
+  block_device {
+    uuid                  = var.image_id
+    source_type           = "image"
+    volume_size           = 50
+    boot_index            = 0
+    destination_type      = "volume"
+    delete_on_termination = true
+  }
+  user_data = <<EOS
+#!/bin/sh
+export DEBIAN_FRONTEND=noninteractive
+
+# install proxysql
+apt-get install -y --no-install-recommends lsb-release wget apt-transport-https ca-certificates gnupg
+wget -O - 'https://repo.proxysql.com/ProxySQL/proxysql-2.6.x/repo_pub_key' | apt-key add - 
+echo deb https://repo.proxysql.com/ProxySQL/proxysql-2.6.x/$(lsb_release -sc)/ ./ | tee /etc/apt/sources.list.d/proxysql.list
+apt update && apt install -y proxysql
 EOS
 }
