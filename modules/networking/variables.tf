@@ -7,5 +7,5 @@ variable "project_id" {
 }
 
 variable "external_network_id" {
-  type = string  
+  type = string
 }

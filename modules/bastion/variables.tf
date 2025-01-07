@@ -11,7 +11,7 @@ variable "image_id" {
 }
 
 variable "key_pair_name" {
-  type = string
+  type    = string
   default = "bbrfkr"
 }
 
@@ -24,5 +24,5 @@ variable "network_id" {
 }
 
 variable "external_subnet_name" {
-  type = string  
+  type = string
 }

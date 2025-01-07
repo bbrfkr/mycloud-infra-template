@@ -8,11 +8,11 @@ resource "openstack_dns_zone_v2" "zone" {
 
 resource "openstack_dns_recordset_v2" "node_record_sets" {
   for_each = openstack_networking_port_v2.node_ports
-  zone_id     = openstack_dns_zone_v2.zone.id
-  name        = "node-${each.key}.mongodb-${var.environment_name}.dynamis.bbrfkr.net."
-  ttl         = 600
-  type        = "A"
-  records     = [each.value.all_fixed_ips[0]]
+  zone_id  = openstack_dns_zone_v2.zone.id
+  name     = "node-${each.key}.mongodb-${var.environment_name}.dynamis.bbrfkr.net."
+  ttl      = 600
+  type     = "A"
+  records  = [each.value.all_fixed_ips[0]]
 }
 
 resource "openstack_dns_recordset_v2" "endpoint_rs" {
@@ -26,7 +26,7 @@ resource "openstack_dns_recordset_v2" "endpoint_rs" {
 
 resource "openstack_networking_secgroup_v2" "node_sg" {
   name        = "${var.environment_name}-mongodb-sg"
-  description = "${var.environment_name}-mongodb-sg"  
+  description = "${var.environment_name}-mongodb-sg"
 }
 
 resource "openstack_networking_secgroup_rule_v2" "node_sg_rule_1" {
@@ -50,22 +50,22 @@ resource "openstack_networking_secgroup_rule_v2" "node_sg_rule_91" {
 }
 
 resource "openstack_networking_port_v2" "node_ports" {
-  for_each = toset([for index in range(var.node_count) : tostring(index)])
-  network_id = var.network_id
+  for_each           = toset([for index in range(var.node_count) : tostring(index)])
+  network_id         = var.network_id
   security_group_ids = [openstack_networking_secgroup_v2.node_sg.id]
 }
 
 resource "openstack_blockstorage_volume_v3" "node_data_volumes" {
   for_each = toset([for index in range(var.node_count) : tostring(index)])
-  name        = "mongodb-data-${each.value}"
-  size        = var.data_volume_size
+  name     = "mongodb-data-${each.value}"
+  size     = var.data_volume_size
 }
 
 resource "openstack_compute_instance_v2" "nodes" {
-  for_each = openstack_networking_port_v2.node_ports
-  name = "${var.environment_name}-mongodb-${each.key}"
+  for_each  = openstack_networking_port_v2.node_ports
+  name      = "${var.environment_name}-mongodb-${each.key}"
   flavor_id = var.flavor_id
-  key_pair = var.key_pair_name
+  key_pair  = var.key_pair_name
   network {
     port = each.value.id
   }
@@ -134,13 +134,13 @@ if [ $node_number -eq 0 ] ; then
     {
       "_id": "${var.replica_set_name}",
       "members": ${jsonencode(
-        [for index in range(var.node_count)
-        : {
-            _id: index,
-            host: "node-${index}.mongodb-${var.environment_name}.dynamis.bbrfkr.net"
-          }
-        ]
-      )}
+  [for index in range(var.node_count)
+    : {
+      _id : index,
+      host : "node-${index}.mongodb-${var.environment_name}.dynamis.bbrfkr.net"
+    }
+  ]
+)}
     }
   )'
 fi

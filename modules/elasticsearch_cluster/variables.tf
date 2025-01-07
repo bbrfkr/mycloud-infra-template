@@ -11,7 +11,7 @@ variable "image_id" {
 }
 
 variable "key_pair_name" {
-  type = string
+  type    = string
   default = "bbrfkr"
 }
 
@@ -36,29 +36,29 @@ variable "bastion_sg_id" {
 }
 
 variable "master_count" {
-  type = number
+  type    = number
   default = 3
 }
 
 variable "data_count" {
-  type = number
+  type    = number
   default = 2
 }
 
 variable "subnet_cidr" {
-  type = string  
+  type = string
 }
 
 variable "subnet_id" {
-  type = string  
+  type = string
 }
 
 variable "master_volume_size" {
-  type = string
+  type    = string
   default = 30
 }
 
 variable "data_volume_size" {
-  type = string
+  type    = string
   default = 100
 }

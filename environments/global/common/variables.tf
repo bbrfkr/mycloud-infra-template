@@ -3,7 +3,7 @@ variable "project_id" {
 }
 
 variable "project_name" {
-  type = string 
+  type = string
 }
 
 variable "region_name" {

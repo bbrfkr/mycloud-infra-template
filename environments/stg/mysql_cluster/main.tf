@@ -1,5 +1,5 @@
-module "mongodb_cluster" {
-  source           = "../../../modules/mongodb_cluster"
+module "mysql_cluster" {
+  source           = "../../../modules/mysql_cluster"
   environment_name = data.terraform_remote_state.common.outputs.environment_name
   project_id       = data.terraform_remote_state.global_common.outputs.project_id
   image_id         = var.image_id
