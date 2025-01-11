@@ -1,4 +1,4 @@
-resource "random_uuid" "replication_group_name" {  
+resource "random_uuid" "replication_group_name" {
 }
 
 resource "random_password" "replication_user_password" {
@@ -194,7 +194,7 @@ plugin_load_add='group_replication.so'
 loose_group_replication_group_name="${random_uuid.replication_group_name.result}"
 loose_group_replication_start_on_boot=off
 loose_group_replication_local_address="${each.value.all_fixed_ips[0]}:33061"
-loose_group_replication_group_seeds="${join(",", [for port in openstack_networking_port_v2.node_ports: "${port.all_fixed_ips[0]}:33061"])}"
+loose_group_replication_group_seeds="${join(",", [for port in openstack_networking_port_v2.node_ports : "${port.all_fixed_ips[0]}:33061"])}"
 loose_group_replication_bootstrap_group=off
 loose_group_replication_recovery_get_public_key=1
 EOF
@@ -351,7 +351,7 @@ INSERT INTO mysql_group_replication_hostgroups (writer_hostgroup,backup_writer_h
 EOT
 
 index=0
-for ip in ${join(" ", [for port in openstack_networking_port_v2.node_ports: port.all_fixed_ips[0]])}; do
+for ip in ${join(" ", [for port in openstack_networking_port_v2.node_ports : port.all_fixed_ips[0]])}; do
   if [ $index -eq 0 ]; then
     hostgroup_id=30
   else
