@@ -252,6 +252,16 @@ resource "openstack_networking_secgroup_rule_v2" "proxysql_sg_rule_1" {
   security_group_id = openstack_networking_secgroup_v2.proxysql_sg.id
 }
 
+resource "openstack_networking_secgroup_rule_v2" "proxysql_sg_rule_2" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 3307
+  port_range_max    = 3307
+  remote_ip_prefix  = var.subnet_cidr
+  security_group_id = openstack_networking_secgroup_v2.proxysql_sg.id
+}
+
 resource "openstack_networking_secgroup_rule_v2" "proxysql_sg_rule_91" {
   direction         = "ingress"
   ethertype         = "IPv4"
@@ -309,7 +319,7 @@ mysql_variables=
         default_query_timeout=36000000
         have_compress=true
         poll_timeout=2000
-        interfaces="0.0.0.0:3306;/tmp/proxysql.sock"
+        interfaces="0.0.0.0:3306;0.0.0.0:3307"
         default_schema="information_schema"
         stacksize=1048576
         server_version="5.5.30"
@@ -358,5 +368,95 @@ INSERT INTO mysql_hostgroup_attributes (hostgroup_id,servers_defaults) VALUES (3
 LOAD MYSQL SERVERS TO RUNTIME;
 SAVE MYSQL SERVERS TO DISK;
 EOT
+
+cat <<EOT | mysql -uproxyadmin -p'${random_password.proxysql_admin_password.result}' -h127.0.0.1 -P6032
+INSERT INTO mysql_query_rules (rule_id,active,proxy_port,destination_hostgroup,apply) VALUES (1,1,3306,30,1), (2,1,3307,31,1);
+LOAD MYSQL QUERY RULES TO RUNTIME;
+SAVE MYSQL QUERY RULES TO DISK;
+EOT
 EOS
 }
+
+resource "openstack_networking_secgroup_v2" "endpoint_lb_sg" {
+  name        = "${var.environment_name}-mysql-endpoint-lb-sg"
+  description = "${var.environment_name}-mysql-endpoint-lb-sg"
+}
+
+resource "openstack_networking_secgroup_rule_v2" "endpoint_lb_sg_rule_1" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 3306
+  port_range_max    = 3306
+  remote_ip_prefix  = var.subnet_cidr
+  security_group_id = openstack_networking_secgroup_v2.endpoint_lb_sg.id
+}
+
+resource "openstack_lb_loadbalancer_v2" "read_endpoint_lb" {
+  vip_subnet_id         = var.subnet_id
+  name                  = "${var.environment_name}-mysql-read-endpoint-lb"
+  loadbalancer_provider = "octavia"
+  security_group_ids    = [openstack_networking_secgroup_v2.endpoint_lb_sg.id]
+}
+
+resource "openstack_lb_listener_v2" "read_endpoint_lb_listener" {
+  loadbalancer_id = openstack_lb_loadbalancer_v2.read_endpoint_lb.id
+  protocol        = "TCP"
+  protocol_port   = 3306
+}
+
+resource "openstack_lb_pool_v2" "read_endpoint_lb_pool" {
+  listener_id = openstack_lb_listener_v2.read_endpoint_lb_listener.id
+  lb_method   = "LEAST_CONNECTIONS"
+  protocol    = "TCP"
+}
+
+resource "openstack_lb_member_v2" "read_endpoint_lb_member" {
+  address       = openstack_networking_port_v2.proxysql_port.all_fixed_ips[0]
+  pool_id       = openstack_lb_pool_v2.read_endpoint_lb_pool.id
+  protocol_port = 3307
+  subnet_id     = var.subnet_id
+}
+
+resource "openstack_lb_loadbalancer_v2" "write_endpoint_lb" {
+  vip_subnet_id         = var.subnet_id
+  name                  = "${var.environment_name}-mysql-write-endpoint-lb"
+  loadbalancer_provider = "octavia"
+  security_group_ids    = [openstack_networking_secgroup_v2.endpoint_lb_sg.id]
+}
+
+resource "openstack_lb_listener_v2" "write_endpoint_lb_listener" {
+  loadbalancer_id = openstack_lb_loadbalancer_v2.write_endpoint_lb.id
+  protocol        = "TCP"
+  protocol_port   = 3306
+}
+
+resource "openstack_lb_pool_v2" "write_endpoint_lb_pool" {
+  listener_id = openstack_lb_listener_v2.write_endpoint_lb_listener.id
+  lb_method   = "LEAST_CONNECTIONS"
+  protocol    = "TCP"
+}
+
+resource "openstack_lb_member_v2" "write_endpoint_lb_member" {
+  address       = openstack_networking_port_v2.proxysql_port.all_fixed_ips[0]
+  pool_id       = openstack_lb_pool_v2.write_endpoint_lb_pool.id
+  protocol_port = 3306
+  subnet_id     = var.subnet_id
+}
+
+resource "openstack_dns_recordset_v2" "write_endpoint_record_set" {
+  zone_id = openstack_dns_zone_v2.zone.id
+  name    = "${var.environment_name}-write.mysql-${var.environment_name}.dynamis.bbrfkr.net."
+  ttl     = 600
+  type    = "A"
+  records = [openstack_lb_loadbalancer_v2.write_endpoint_lb.vip_address]
+}
+
+resource "openstack_dns_recordset_v2" "read_endpoint_record_set" {
+  zone_id = openstack_dns_zone_v2.zone.id
+  name    = "${var.environment_name}-read.mysql-${var.environment_name}.dynamis.bbrfkr.net."
+  ttl     = 600
+  type    = "A"
+  records = [openstack_lb_loadbalancer_v2.read_endpoint_lb.vip_address]
+}
+
