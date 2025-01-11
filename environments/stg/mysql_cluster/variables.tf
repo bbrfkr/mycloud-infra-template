@@ -5,3 +5,7 @@ variable "image_id" {
 variable "flavor_id" {
   type = string
 }
+
+variable "node_count" {
+  type = number
+}
