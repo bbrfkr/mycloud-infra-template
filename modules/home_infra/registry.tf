@@ -1,38 +1,3 @@
-##### utilities #####
-resource "openstack_dns_zone_v2" "zone" {
-  name        = "home.dynamis.bbrfkr.net."
-  email       = "bbrfkr@gmail.com"
-  description = "for home infrastructure"
-  ttl         = 600
-  type        = "PRIMARY"
-}
-
-resource "openstack_networking_secgroup_v2" "allow_all_sg" {
-  name        = "allow-all"
-  description = "allow-all"
-}
-
-resource "openstack_networking_secgroup_rule_v2" "allow_all_sg_rule_1" {
-  direction         = "ingress"
-  ethertype         = "IPv4"
-  protocol          = "tcp"
-  port_range_min    = 0
-  port_range_max    = 0
-  remote_ip_prefix  = "0.0.0.0/0"
-  security_group_id = openstack_networking_secgroup_v2.allow_all_sg.id
-}
-
-##### nas #####
-resource "openstack_dns_recordset_v2" "nas_rs" {
-  zone_id     = openstack_dns_zone_v2.zone.id
-  name        = "nas.home.dynamis.bbrfkr.net."
-  description = "for home nas"
-  ttl         = 600
-  type        = "A"
-  records     = ["192.168.1.20"]
-}
-
-##### registry #####
 resource "openstack_networking_secgroup_v2" "registry_sg" {
   name        = "${var.environment_name}-registry-sg"
   description = "${var.environment_name}-registry-sg"
@@ -221,7 +186,3 @@ resource "openstack_objectstorage_container_v1" "registry_container" {
   region = "RegionOne"
   name   = "${var.environment_name}-registry"
 }
-
-##### info collector #####
-
-##### ai servers #####

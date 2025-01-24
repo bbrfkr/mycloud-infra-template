@@ -93,3 +93,28 @@ data "openstack_keymanager_secret_v1" "dockerhub_password" {
   name        = "dockerhub_password"
   secret_type = "opaque"
 }
+
+data "openstack_keymanager_secret_v1" "discord_general_news_hook_url" {
+  name        = "discord_general_news_hook_url"
+  secret_type = "opaque"
+}
+
+data "openstack_keymanager_secret_v1" "discord_it_news_hook_url" {
+  name        = "discord_it_news_hook_url"
+  secret_type = "opaque"
+}
+
+data "openstack_keymanager_secret_v1" "discord_aws_news_hook_url" {
+  name        = "discord_aws_news_hook_url"
+  secret_type = "opaque"
+}
+
+data "openstack_keymanager_secret_v1" "discord_it_event_hook_url" {
+  name        = "discord_it_event_hook_url"
+  secret_type = "opaque"
+}
+
+data "openstack_keymanager_secret_v1" "discord_developersio_hook_url" {
+  name        = "discord_developersio_hook_url"
+  secret_type = "opaque"
+}

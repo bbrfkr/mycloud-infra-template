@@ -31,6 +31,18 @@ variable "registry_flavor_id" {
   default = "3419f213-0120-493c-b3c4-c2996ec17b34"
 }
 
+variable "info_collector_image_id" {
+  type = string
+  // ubuntu-noble
+  default = "2dac0fd5-8701-4141-9161-8e9d2f31a623"
+}
+
+variable "info_collector_flavor_id" {
+  type = string
+  // ubuntu-noble
+  default = "3419f213-0120-493c-b3c4-c2996ec17b34"
+}
+
 variable "text_generation_image_id" {
   type = string
   // ubuntu-noble
@@ -56,5 +68,25 @@ variable "dockerhub_username" {
 }
 
 variable "dockerhub_password" {
+  type = string
+}
+
+variable "discord_general_news_hook_url" {
+  type = string
+}
+
+variable "discord_it_news_hook_url" {
+  type = string
+}
+
+variable "discord_aws_news_hook_url" {
+  type = string
+}
+
+variable "discord_it_event_hook_url" {
+  type = string
+}
+
+variable "discord_developersio_hook_url" {
   type = string
 }
