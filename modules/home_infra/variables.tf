@@ -53,6 +53,36 @@ variable "ollama_volume_id" {
   type = string
 }
 
+variable "generation_2d_flavor_id" {
+  type = string
+  # p1.large
+  default = "eed597ed-8bd8-4b3d-9cf8-0b8063501517"
+}
+
+variable "generation_2d_volume_id" {
+  type = string
+}
+
+variable "generation_3d_flavor_id" {
+  type = string
+  # p1.large
+  default = "eed597ed-8bd8-4b3d-9cf8-0b8063501517"
+}
+
+variable "generation_3d_volume_id" {
+  type = string
+}
+
+variable "gpu_workbench_flavor_id" {
+  type = string
+  # p1.large
+  default = "eed597ed-8bd8-4b3d-9cf8-0b8063501517"
+}
+
+variable "gpu_workbench_volume_id" {
+  type = string
+}
+
 variable "openstack_admin_access_key_id" {
   type = string
 }
