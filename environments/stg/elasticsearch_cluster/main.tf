@@ -10,6 +10,6 @@ module "elasticsearch_cluster" {
   cluster_name     = var.cluster_name
   subnet_cidr      = data.terraform_remote_state.networking.outputs.all.subnet_cidr
   subnet_id        = data.terraform_remote_state.networking.outputs.all.subnet_id
-  zone_id = data.terraform_remote_state.networking.outputs.all.zone_id
-  zone_name = data.terraform_remote_state.networking.outputs.all.zone_name
+  zone_id          = data.terraform_remote_state.networking.outputs.all.zone_id
+  zone_name        = data.terraform_remote_state.networking.outputs.all.zone_name
 }

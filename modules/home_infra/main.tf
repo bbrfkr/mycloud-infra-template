@@ -63,7 +63,7 @@ resource "openstack_networking_floatingip_v2" "registry_fip" {
 }
 
 resource "openstack_dns_recordset_v2" "registry_rs" {
-  zone_id  = openstack_dns_zone_v2.zone.id
+  zone_id     = openstack_dns_zone_v2.zone.id
   name        = "registry.${openstack_dns_zone_v2.zone.name}"
   description = "for registry"
   ttl         = 600
@@ -72,7 +72,7 @@ resource "openstack_dns_recordset_v2" "registry_rs" {
 }
 
 resource "openstack_dns_recordset_v2" "registry_for_push_rs" {
-  zone_id  = openstack_dns_zone_v2.zone.id
+  zone_id     = openstack_dns_zone_v2.zone.id
   name        = "registry-for-push.${openstack_dns_zone_v2.zone.name}"
   description = "for registry-for-push"
   ttl         = 600

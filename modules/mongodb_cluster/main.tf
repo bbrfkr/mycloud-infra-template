@@ -8,7 +8,7 @@ resource "openstack_dns_recordset_v2" "node_record_sets" {
 }
 
 resource "openstack_dns_recordset_v2" "endpoint_rs" {
-  zone_id  = var.zone_id
+  zone_id     = var.zone_id
   name        = "_mongodb._tcp.endpoint.${var.zone_name}"
   description = "for mongodb endpoint"
   ttl         = 600

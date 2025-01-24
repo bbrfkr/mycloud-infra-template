@@ -9,6 +9,6 @@ module "mysql_cluster" {
   bastion_sg_id    = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
   subnet_cidr      = data.terraform_remote_state.networking.outputs.all.subnet_cidr
   subnet_id        = data.terraform_remote_state.networking.outputs.all.subnet_id
-  zone_id = data.terraform_remote_state.networking.outputs.all.zone_id
-  zone_name = data.terraform_remote_state.networking.outputs.all.zone_name
+  zone_id          = data.terraform_remote_state.networking.outputs.all.zone_id
+  zone_name        = data.terraform_remote_state.networking.outputs.all.zone_name
 }

@@ -26,7 +26,7 @@ resource "openstack_lb_member_v2" "master_member" {
 }
 
 resource "openstack_dns_recordset_v2" "master_lb_rs" {
-  zone_id  = var.zone_id
+  zone_id     = var.zone_id
   name        = "master.${var.zone_name}"
   description = "for master lb"
   ttl         = 600

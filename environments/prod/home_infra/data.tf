@@ -75,21 +75,21 @@ data "terraform_remote_state" "bastion" {
 }
 
 data "openstack_keymanager_secret_v1" "openstack_admin_access_key_id" {
-  name = "openstack_admin_access_key_id"
+  name        = "openstack_admin_access_key_id"
   secret_type = "opaque"
 }
 
 data "openstack_keymanager_secret_v1" "openstack_admin_secret_access_key" {
-  name = "openstack_admin_secret_access_key"
+  name        = "openstack_admin_secret_access_key"
   secret_type = "opaque"
 }
 
 data "openstack_keymanager_secret_v1" "dockerhub_username" {
-  name = "dockerhub_username"
+  name        = "dockerhub_username"
   secret_type = "opaque"
 }
 
 data "openstack_keymanager_secret_v1" "dockerhub_password" {
-  name = "dockerhub_password"
+  name        = "dockerhub_password"
   secret_type = "opaque"
 }
