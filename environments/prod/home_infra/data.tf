@@ -1,0 +1,120 @@
+data "terraform_remote_state" "global_common" {
+  backend = "s3"
+  config = {
+    bucket = "mycloud-tfstates"
+    key    = "global/common"
+    endpoints = {
+      s3 = "https://swift.dynamis.bbrfkr.net"
+    }
+    region                      = "nova"
+    profile                     = "openstack"
+    skip_credentials_validation = true
+    skip_region_validation      = true
+    skip_requesting_account_id  = true
+    skip_metadata_api_check     = true
+    skip_s3_checksum            = true
+    use_path_style              = true
+  }
+}
+
+data "terraform_remote_state" "common" {
+  backend = "s3"
+  config = {
+    bucket = "mycloud-tfstates"
+    key    = "prod/common"
+    endpoints = {
+      s3 = "https://swift.dynamis.bbrfkr.net"
+    }
+    region                      = "nova"
+    profile                     = "openstack"
+    skip_credentials_validation = true
+    skip_region_validation      = true
+    skip_requesting_account_id  = true
+    skip_metadata_api_check     = true
+    skip_s3_checksum            = true
+    use_path_style              = true
+  }
+}
+
+data "terraform_remote_state" "networking" {
+  backend = "s3"
+  config = {
+    bucket = "mycloud-tfstates"
+    key    = "prod/networking"
+    endpoints = {
+      s3 = "https://swift.dynamis.bbrfkr.net"
+    }
+    region                      = "nova"
+    profile                     = "openstack"
+    skip_credentials_validation = true
+    skip_region_validation      = true
+    skip_requesting_account_id  = true
+    skip_metadata_api_check     = true
+    skip_s3_checksum            = true
+    use_path_style              = true
+  }
+}
+
+data "terraform_remote_state" "bastion" {
+  backend = "s3"
+  config = {
+    bucket = "mycloud-tfstates"
+    key    = "prod/bastion"
+    endpoints = {
+      s3 = "https://swift.dynamis.bbrfkr.net"
+    }
+    region                      = "nova"
+    profile                     = "openstack"
+    skip_credentials_validation = true
+    skip_region_validation      = true
+    skip_requesting_account_id  = true
+    skip_metadata_api_check     = true
+    skip_s3_checksum            = true
+    use_path_style              = true
+  }
+}
+
+data "openstack_keymanager_secret_v1" "openstack_admin_access_key_id" {
+  name        = "openstack_admin_access_key_id"
+  secret_type = "opaque"
+}
+
+data "openstack_keymanager_secret_v1" "openstack_admin_secret_access_key" {
+  name        = "openstack_admin_secret_access_key"
+  secret_type = "opaque"
+}
+
+data "openstack_keymanager_secret_v1" "dockerhub_username" {
+  name        = "dockerhub_username"
+  secret_type = "opaque"
+}
+
+data "openstack_keymanager_secret_v1" "dockerhub_password" {
+  name        = "dockerhub_password"
+  secret_type = "opaque"
+}
+
+data "openstack_keymanager_secret_v1" "discord_general_news_hook_url" {
+  name        = "discord_general_news_hook_url"
+  secret_type = "opaque"
+}
+
+data "openstack_keymanager_secret_v1" "discord_it_news_hook_url" {
+  name        = "discord_it_news_hook_url"
+  secret_type = "opaque"
+}
+
+data "openstack_keymanager_secret_v1" "discord_aws_news_hook_url" {
+  name        = "discord_aws_news_hook_url"
+  secret_type = "opaque"
+}
+
+data "openstack_keymanager_secret_v1" "discord_it_event_hook_url" {
+  name        = "discord_it_event_hook_url"
+  secret_type = "opaque"
+}
+
+data "openstack_keymanager_secret_v1" "discord_developersio_hook_url" {
+  name        = "discord_developersio_hook_url"
+  secret_type = "opaque"
+}

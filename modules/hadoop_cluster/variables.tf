@@ -15,7 +15,11 @@ variable "key_pair_name" {
   default = "bbrfkr"
 }
 
-variable "flavor_id" {
+variable "master_flavor_id" {
+  type = string
+}
+
+variable "worker_flavor_id" {
   type = string
 }
 
@@ -27,7 +31,12 @@ variable "bastion_sg_id" {
   type = string
 }
 
-variable "node_count" {
+variable "master_count" {
+  type    = number
+  default = 1
+}
+
+variable "data_count" {
   type    = number
   default = 3
 }
@@ -40,14 +49,14 @@ variable "subnet_id" {
   type = string
 }
 
-variable "data_volume_size" {
+variable "master_volume_size" {
   type    = string
-  default = 100
+  default = 30
 }
 
-variable "replica_set_name" {
+variable "worker_volume_size" {
   type    = string
-  default = "rs0"
+  default = 100
 }
 
 variable "zone_id" {

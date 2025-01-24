@@ -1,23 +1,15 @@
-resource "openstack_dns_zone_v2" "zone" {
-  name        = "mongodb-${var.environment_name}.dynamis.bbrfkr.net."
-  email       = "bbrfkr@gmail.com"
-  description = "for mongodb"
-  ttl         = 600
-  type        = "PRIMARY"
-}
-
 resource "openstack_dns_recordset_v2" "node_record_sets" {
   for_each = openstack_networking_port_v2.node_ports
-  zone_id  = openstack_dns_zone_v2.zone.id
-  name     = "node-${each.key}.mongodb-${var.environment_name}.dynamis.bbrfkr.net."
+  zone_id  = var.zone_id
+  name     = "node-${each.key}.mongodb-${var.zone_name}"
   ttl      = 600
   type     = "A"
   records  = [each.value.all_fixed_ips[0]]
 }
 
 resource "openstack_dns_recordset_v2" "endpoint_rs" {
-  zone_id     = openstack_dns_zone_v2.zone.id
-  name        = "_mongodb._tcp.endpoint.mongodb-${var.environment_name}.dynamis.bbrfkr.net."
+  zone_id     = var.zone_id
+  name        = "_mongodb._tcp.endpoint.${var.zone_name}"
   description = "for mongodb endpoint"
   ttl         = 600
   type        = "SRV"
