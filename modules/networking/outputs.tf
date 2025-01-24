@@ -17,3 +17,11 @@ output "subnet_name" {
 output "subnet_cidr" {
   value = openstack_networking_subnet_v2.subnet.cidr
 }
+
+output "zone_id" {
+  value = openstack_dns_zone_v2.zone.id
+}
+
+output "zone_name" {
+  value = openstack_dns_zone_v2.zone.name
+}

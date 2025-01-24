@@ -49,3 +49,11 @@ variable "replica_set_name" {
   type    = string
   default = "rs0"
 }
+
+variable "zone_id" {
+  type = string
+}
+
+variable "zone_name" {
+  type = string
+}

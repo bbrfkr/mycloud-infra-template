@@ -1,0 +1,13 @@
+module "home_infra" {
+  source               = "../../../modules/home_infra"
+  environment_name = data.terraform_remote_state.common.outputs.environment_name
+  network_id           = data.terraform_remote_state.networking.outputs.all.network_id
+  bastion_sg_id = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
+  external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
+  registry_image_id = var.registry_image_id
+  registry_flavor_id = var.registry_flavor_id
+  openstack_admin_access_key_id = base64decode(data.openstack_keymanager_secret_v1.openstack_admin_access_key_id.payload)
+  openstack_admin_secret_access_key = base64decode(data.openstack_keymanager_secret_v1.openstack_admin_secret_access_key.payload)
+  dockerhub_username = base64decode(data.openstack_keymanager_secret_v1.dockerhub_username.payload)
+  dockerhub_password = base64decode(data.openstack_keymanager_secret_v1.dockerhub_password.payload)
+}

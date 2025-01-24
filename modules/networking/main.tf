@@ -20,3 +20,11 @@ resource "openstack_networking_router_interface_v2" "router_interface_for_public
   router_id = openstack_networking_router_v2.router.id
   subnet_id = openstack_networking_subnet_v2.subnet.id
 }
+
+resource "openstack_dns_zone_v2" "zone" {
+  name        = "${var.environment_name}.dynamis.bbrfkr.net."
+  email       = "bbrfkr@gmail.com"
+  description = "for ${var.environment_name}"
+  ttl         = 600
+  type        = "PRIMARY"
+}

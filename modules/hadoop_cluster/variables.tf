@@ -58,3 +58,11 @@ variable "worker_volume_size" {
   type    = string
   default = 100
 }
+
+variable "zone_id" {
+  type = string
+}
+
+variable "zone_name" {
+  type = string
+}

@@ -1,14 +1,6 @@
-# resource "openstack_dns_zone_v2" "zone" {
-#   name        = "hadoop-${var.environment_name}.dynamis.bbrfkr.net."
-#   email       = "bbrfkr@gmail.com"
-#   description = "for hadoop"
-#   ttl         = 600
-#   type        = "PRIMARY"
-# }
-
 # resource "openstack_dns_recordset_v2" "master_lb_rs" {
-#   zone_id     = openstack_dns_zone_v2.zone.id
-#   name        = "master.elasticsearch-${var.environment_name}.dynamis.bbrfkr.net."
+#   zone_id  = var.zone_id
+#   name        = "master.${var.zone_name}"
 #   description = "for master lb"
 #   ttl         = 600
 #   type        = "A"
