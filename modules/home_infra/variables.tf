@@ -43,16 +43,14 @@ variable "info_collector_flavor_id" {
   default = "3419f213-0120-493c-b3c4-c2996ec17b34"
 }
 
-variable "text_generation_image_id" {
+variable "ollama_flavor_id" {
   type = string
-  // ubuntu-noble
-  default = "2dac0fd5-8701-4141-9161-8e9d2f31a623"
+  # p1.large
+  default = "eed597ed-8bd8-4b3d-9cf8-0b8063501517"
 }
 
-variable "text_generation_flavor_id" {
+variable "ollama_volume_id" {
   type = string
-  // g1.tiny
-  default = "3419f213-0120-493c-b3c4-c2996ec17b34"
 }
 
 variable "openstack_admin_access_key_id" {

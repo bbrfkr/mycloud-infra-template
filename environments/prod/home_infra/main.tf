@@ -8,6 +8,8 @@ module "home_infra" {
   registry_flavor_id                = var.registry_flavor_id
   info_collector_image_id           = var.info_collector_image_id
   info_collector_flavor_id          = var.info_collector_flavor_id
+  ollama_flavor_id = var.ollama_flavor_id
+  ollama_volume_id = var.ollama_volume_id
   openstack_admin_access_key_id     = base64decode(data.openstack_keymanager_secret_v1.openstack_admin_access_key_id.payload)
   openstack_admin_secret_access_key = base64decode(data.openstack_keymanager_secret_v1.openstack_admin_secret_access_key.payload)
   dockerhub_username                = base64decode(data.openstack_keymanager_secret_v1.dockerhub_username.payload)

@@ -93,6 +93,6 @@ connpass_api_url: "dummy"
 connpass_configs: []
 EOF
 
-echo "0 * * * * cd /var/lib/info-collector && poetry run python main.py" | crontab -
+echo "0 * * * * cd /var/lib/info-collector && /root/.pyenv/shims/poetry run python main.py >> /var/log/info-collector.log 2>&1" | crontab -
 EOS
 }

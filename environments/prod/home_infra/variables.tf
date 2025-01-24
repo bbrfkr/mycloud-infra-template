@@ -13,3 +13,11 @@ variable "info_collector_image_id" {
 variable "info_collector_flavor_id" {
   type = string
 }
+
+variable "ollama_flavor_id" {
+  type = string  
+}
+
+variable "ollama_volume_id" {
+  type = string
+}
