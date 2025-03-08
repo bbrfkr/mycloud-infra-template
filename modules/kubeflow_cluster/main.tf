@@ -1,5 +1,5 @@
 resource "openstack_dns_zone_v2" "zone" {
-  name = "kubeflow.${var.zone_name}"
+  name        = "kubeflow.${var.zone_name}"
   email       = "bbrfkr@gmail.com"
   description = "for ${var.environment_name} kubeflow"
   ttl         = 600
@@ -18,7 +18,7 @@ resource "openstack_dns_recordset_v2" "zone_ns_rs" {
 
 resource "openstack_dns_recordset_v2" "kubeflow_rs" {
   zone_id     = openstack_dns_zone_v2.zone.id
-  name        = "${openstack_dns_zone_v2.zone.name}"
+  name        = openstack_dns_zone_v2.zone.name
   description = "for kubeflow"
   ttl         = 600
   type        = "A"

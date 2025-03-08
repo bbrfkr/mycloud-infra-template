@@ -16,7 +16,7 @@ variable "node_count" {
 
 # bke-gpu-1.26
 variable "cluster_template_id" {
-  type    = string
+  type = string
 }
 
 variable "floating_ip_enabled" {
