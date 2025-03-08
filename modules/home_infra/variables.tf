@@ -31,18 +31,6 @@ variable "registry_flavor_id" {
   default = "3419f213-0120-493c-b3c4-c2996ec17b34"
 }
 
-variable "ollama_registry_image_id" {
-  type = string
-  // ubuntu-noble
-  default = "2dac0fd5-8701-4141-9161-8e9d2f31a623"
-}
-
-variable "ollama_registry_flavor_id" {
-  type = string
-  // ubuntu-noble
-  default = "3419f213-0120-493c-b3c4-c2996ec17b34"
-}
-
 variable "info_collector_image_id" {
   type = string
   // ubuntu-noble
@@ -62,16 +50,6 @@ variable "ollama_flavor_id" {
 }
 
 variable "ollama_volume_id" {
-  type = string
-}
-
-variable "ollama2_flavor_id" {
-  type = string
-  # p1.large
-  default = "eed597ed-8bd8-4b3d-9cf8-0b8063501517"
-}
-
-variable "ollama2_volume_id" {
   type = string
 }
 

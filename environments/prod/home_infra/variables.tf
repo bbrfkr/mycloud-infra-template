@@ -6,14 +6,6 @@ variable "registry_flavor_id" {
   type = string
 }
 
-variable "ollama_registry_image_id" {
-  type = string
-}
-
-variable "ollama_registry_flavor_id" {
-  type = string
-}
-
 variable "info_collector_image_id" {
   type = string
 }
@@ -27,14 +19,6 @@ variable "ollama_flavor_id" {
 }
 
 variable "ollama_volume_id" {
-  type = string
-}
-
-variable "ollama2_flavor_id" {
-  type = string
-}
-
-variable "ollama2_volume_id" {
   type = string
 }
 

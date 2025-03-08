@@ -6,14 +6,10 @@ module "home_infra" {
   external_subnet_name              = data.terraform_remote_state.global_common.outputs.external_subnet_name
   registry_image_id                 = var.registry_image_id
   registry_flavor_id                = var.registry_flavor_id
-  ollama_registry_flavor_id         = var.ollama_registry_flavor_id
-  ollama_registry_image_id          = var.ollama_registry_image_id
   info_collector_image_id           = var.info_collector_image_id
   info_collector_flavor_id          = var.info_collector_flavor_id
   ollama_flavor_id                  = var.ollama_flavor_id
   ollama_volume_id                  = var.ollama_volume_id
-  ollama2_flavor_id                 = var.ollama2_flavor_id
-  ollama2_volume_id                 = var.ollama2_volume_id
   generation_2d_flavor_id           = var.generation_2d_flavor_id
   generation_2d_volume_id           = var.generation_2d_volume_id
   generation_3d_flavor_id           = var.generation_3d_flavor_id
