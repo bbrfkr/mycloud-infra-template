@@ -37,21 +37,21 @@ resource "openstack_networking_port_v2" "generation_3d_port" {
   security_group_ids = [openstack_networking_secgroup_v2.generation_3d_sg.id]
 }
 
-resource "openstack_compute_instance_v2" "generation_3d_instance" {
-  name      = "${var.environment_name}-generation-3d"
-  flavor_id = var.generation_3d_flavor_id
-  key_pair  = var.key_pair_name
-  block_device {
-    uuid                  = var.generation_3d_volume_id
-    source_type           = "volume"
-    boot_index            = 0
-    destination_type      = "volume"
-    delete_on_termination = false
-  }
-  network {
-    port = openstack_networking_port_v2.generation_3d_port.id
-  }
-}
+# resource "openstack_compute_instance_v2" "generation_3d_instance" {
+#   name      = "${var.environment_name}-generation-3d"
+#   flavor_id = var.generation_3d_flavor_id
+#   key_pair  = var.key_pair_name
+#   block_device {
+#     uuid                  = var.generation_3d_volume_id
+#     source_type           = "volume"
+#     boot_index            = 0
+#     destination_type      = "volume"
+#     delete_on_termination = false
+#   }
+#   network {
+#     port = openstack_networking_port_v2.generation_3d_port.id
+#   }
+# }
 
 resource "openstack_networking_floatingip_v2" "generation_3d_fip" {
   pool = var.external_subnet_name

@@ -7,7 +7,7 @@ terraform {
   }
   backend "s3" {
     bucket = "mycloud-tfstates"
-    key    = "stg/mysql_cluster"
+    key    = "prod/kubeflow_cluster"
     endpoints = {
       s3 = "https://swift.dynamis.bbrfkr.net"
     }

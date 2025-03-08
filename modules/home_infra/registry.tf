@@ -158,7 +158,7 @@ WantedBy=multi-user.target
 EOF
 cat <<EOF > /etc/systemd/system/registry-for-push.service
 [Unit]
-Description=Docker Registry
+Description=Docker Registry for Push
 After=docker.service
 
 [Service]
