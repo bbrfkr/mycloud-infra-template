@@ -25,18 +25,10 @@ resource "random_password" "mysql_admin_password" {
   override_special = "-_=+"
 }
 
-resource "openstack_dns_zone_v2" "zone" {
-  name        = "mysql-${var.environment_name}.dynamis.bbrfkr.net."
-  email       = "bbrfkr@gmail.com"
-  description = "for mysql"
-  ttl         = 600
-  type        = "PRIMARY"
-}
-
 resource "openstack_dns_recordset_v2" "node_record_sets" {
   for_each = openstack_networking_port_v2.node_ports
-  zone_id  = openstack_dns_zone_v2.zone.id
-  name     = "${var.environment_name}-mysql-${each.key}.mysql-${var.environment_name}.dynamis.bbrfkr.net."
+  zone_id  = var.zone_id
+  name     = "${var.environment_name}-mysql-${each.key}.${var.zone_name}"
   ttl      = 600
   type     = "A"
   records  = [each.value.all_fixed_ips[0]]
@@ -230,8 +222,8 @@ EOS
 }
 
 resource "openstack_dns_recordset_v2" "proxysql_record_set" {
-  zone_id = openstack_dns_zone_v2.zone.id
-  name    = "${var.environment_name}-proxysql.mysql-${var.environment_name}.dynamis.bbrfkr.net."
+  zone_id = var.zone_id
+  name    = "${var.environment_name}-proxysql.${var.zone_name}"
   ttl     = 600
   type    = "A"
   records = [openstack_networking_port_v2.proxysql_port.all_fixed_ips[0]]
@@ -445,16 +437,16 @@ resource "openstack_lb_member_v2" "write_endpoint_lb_member" {
 }
 
 resource "openstack_dns_recordset_v2" "write_endpoint_record_set" {
-  zone_id = openstack_dns_zone_v2.zone.id
-  name    = "${var.environment_name}-write.mysql-${var.environment_name}.dynamis.bbrfkr.net."
+  zone_id = var.zone_id
+  name    = "${var.environment_name}-write.${var.zone_name}"
   ttl     = 600
   type    = "A"
   records = [openstack_lb_loadbalancer_v2.write_endpoint_lb.vip_address]
 }
 
 resource "openstack_dns_recordset_v2" "read_endpoint_record_set" {
-  zone_id = openstack_dns_zone_v2.zone.id
-  name    = "${var.environment_name}-read.mysql-${var.environment_name}.dynamis.bbrfkr.net."
+  zone_id = var.zone_id
+  name    = "${var.environment_name}-read.${var.zone_name}"
   ttl     = 600
   type    = "A"
   records = [openstack_lb_loadbalancer_v2.read_endpoint_lb.vip_address]

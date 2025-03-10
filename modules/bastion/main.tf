@@ -29,7 +29,7 @@ resource "openstack_compute_instance_v2" "bastion_instance" {
   block_device {
     uuid                  = var.image_id
     source_type           = "image"
-    volume_size           = 100
+    volume_size           = 10
     boot_index            = 0
     destination_type      = "volume"
     delete_on_termination = true
