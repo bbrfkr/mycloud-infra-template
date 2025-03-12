@@ -9,4 +9,6 @@ module "tidb_cluster" {
   subnet_cidr      = data.terraform_remote_state.networking.outputs.all.subnet_cidr
   subnet_id        = data.terraform_remote_state.networking.outputs.all.subnet_id
   external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
+  tikv_node_count = var.tikv_node_count
+  tiflash_node_count = var.tiflash_node_count
 }

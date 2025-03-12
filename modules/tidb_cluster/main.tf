@@ -1,3 +1,9 @@
+# internal ssh key
+resource "tls_private_key" "tidb_internal_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
 # tidb
 resource "openstack_networking_secgroup_v2" "tidb_sg" {
   name        = "${var.environment_name}-tidb-pd-sg"
@@ -32,6 +38,7 @@ resource "openstack_networking_port_v2" "tidb_ports" {
 resource "openstack_compute_instance_v2" "tidb" {
   for_each  = openstack_networking_port_v2.tidb_ports
   name      = "${var.environment_name}-tidb-tidb-${each.key}"
+  image_id = var.image_id
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   network {
@@ -40,14 +47,16 @@ resource "openstack_compute_instance_v2" "tidb" {
   block_device {
     uuid                  = var.image_id
     source_type           = "image"
-    volume_size           = 50
     boot_index            = 0
-    destination_type      = "volume"
+    destination_type      = "local"
     delete_on_termination = true
   }
   user_data = <<EOS
 #!/bin/sh
 export DEBIAN_FRONTEND=noninteractive
+
+# store internal ssh key in a safe place
+echo "${tls_private_key.tidb_internal_key.public_key_openssh}" >> /home/ubuntu/.ssh/authorized_keys
 
 mkdir -p /var/lib/tidb/deploy
 mkdir -p /var/lib/tidb/data
@@ -88,6 +97,7 @@ resource "openstack_networking_port_v2" "pd_ports" {
 resource "openstack_compute_instance_v2" "pd" {
   for_each  = openstack_networking_port_v2.pd_ports
   name      = "${var.environment_name}-tidb-pd-${each.key}"
+  image_id = var.image_id
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   network {
@@ -96,14 +106,16 @@ resource "openstack_compute_instance_v2" "pd" {
   block_device {
     uuid                  = var.image_id
     source_type           = "image"
-    volume_size           = 50
     boot_index            = 0
-    destination_type      = "volume"
+    destination_type      = "local"
     delete_on_termination = true
   }
   user_data = <<EOS
 #!/bin/sh
 export DEBIAN_FRONTEND=noninteractive
+
+# store internal ssh key in a safe place
+echo "${tls_private_key.tidb_internal_key.public_key_openssh}" >> /home/ubuntu/.ssh/authorized_keys
 
 mkdir -p /var/lib/tidb/deploy
 mkdir -p /var/lib/tidb/data
@@ -150,6 +162,7 @@ resource "openstack_blockstorage_volume_v3" "tikv_data_volumes" {
 resource "openstack_compute_instance_v2" "tikv" {
   for_each  = openstack_networking_port_v2.tikv_ports
   name      = "${var.environment_name}-tidb-tikv-${each.key}"
+  image_id = var.image_id
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   network {
@@ -158,9 +171,8 @@ resource "openstack_compute_instance_v2" "tikv" {
   block_device {
     uuid                  = var.image_id
     source_type           = "image"
-    volume_size           = 50
     boot_index            = 0
-    destination_type      = "volume"
+    destination_type      = "local"
     delete_on_termination = true
   }
   block_device {
@@ -173,6 +185,9 @@ resource "openstack_compute_instance_v2" "tikv" {
   user_data = <<EOS
 #!/bin/sh
 export DEBIAN_FRONTEND=noninteractive
+
+# store internal ssh key in a safe place
+echo "${tls_private_key.tidb_internal_key.public_key_openssh}" >> /home/ubuntu/.ssh/authorized_keys
 
 # mount volume
 mkdir -p /var/lib/tidb
@@ -228,6 +243,7 @@ resource "openstack_blockstorage_volume_v3" "tiflash_data_volumes" {
 resource "openstack_compute_instance_v2" "tiflash" {
   for_each  = openstack_networking_port_v2.tiflash_ports
   name      = "${var.environment_name}-tidb-tiflash-${each.key}"
+  image_id = var.image_id
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   network {
@@ -236,9 +252,8 @@ resource "openstack_compute_instance_v2" "tiflash" {
   block_device {
     uuid                  = var.image_id
     source_type           = "image"
-    volume_size           = 50
     boot_index            = 0
-    destination_type      = "volume"
+    destination_type      = "local"
     delete_on_termination = true
   }
   block_device {
@@ -251,6 +266,9 @@ resource "openstack_compute_instance_v2" "tiflash" {
   user_data = <<EOS
 #!/bin/sh
 export DEBIAN_FRONTEND=noninteractive
+
+# store internal ssh key in a safe place
+echo "${tls_private_key.tidb_internal_key.public_key_openssh}" >> /home/ubuntu/.ssh/authorized_keys
 
 # mount volume
 mkdir -p /var/lib/tidb
@@ -302,7 +320,15 @@ resource "openstack_blockstorage_volume_v3" "controller_data_volume" {
 }
 
 resource "openstack_compute_instance_v2" "controller" {
+  # for waiting creations of pd, tidb, tikv, and tiflash, not ports
+  depends_on = [
+    openstack_compute_instance_v2.pd,
+    openstack_compute_instance_v2.tidb,
+    openstack_compute_instance_v2.tikv,
+    openstack_compute_instance_v2.tiflash
+  ]
   name      = "${var.environment_name}-tidb-controller"
+  image_id = var.image_id
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   network {
@@ -311,9 +337,8 @@ resource "openstack_compute_instance_v2" "controller" {
   block_device {
     uuid                  = var.image_id
     source_type           = "image"
-    volume_size           = 50
     boot_index            = 0
-    destination_type      = "volume"
+    destination_type      = "local"
     delete_on_termination = true
   }
   block_device {
@@ -327,6 +352,12 @@ resource "openstack_compute_instance_v2" "controller" {
 #!/bin/sh
 export DEBIAN_FRONTEND=noninteractive
 
+# store internal ssh key in a safe place
+echo "${tls_private_key.tidb_internal_key.private_key_pem}" > /home/ubuntu/.ssh/id_rsa
+echo "${tls_private_key.tidb_internal_key.public_key_openssh}" >> /home/ubuntu/.ssh/authorized_keys
+chown ubuntu:ubuntu /home/ubuntu/.ssh/id_rsa
+chmod 600 /home/ubuntu/.ssh/id_rsa
+
 # mount volume
 mkdir -p /var/lib/tidb
 lsblk -f /dev/vdb | grep xfs > /dev/null
@@ -338,5 +369,25 @@ mount -a
 
 mkdir -p /var/lib/tidb/deploy
 mkdir -p /var/lib/tidb/data
+
+# configure cluster topology
+su -c 'echo "${templatefile(
+  "${path.module}/topology.yaml.tftpl",
+  {
+    pd_servers: [for port in openstack_networking_port_v2.pd_ports : port.all_fixed_ips[0]],
+    tidb_servers: [for port in openstack_networking_port_v2.tidb_ports : port.all_fixed_ips[0]],
+    tikv_servers: [for port in openstack_networking_port_v2.tikv_ports : port.all_fixed_ips[0]],
+    tiflash_servers: [for port in openstack_networking_port_v2.tiflash_ports : port.all_fixed_ips[0]],
+    controller_server: openstack_networking_port_v2.controller_port.all_fixed_ips[0]
+  }
+)}" > /home/ubuntu/topology.yaml' ubuntu
+
+# install tiup
+su -c "curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh" ubuntu
+su -c "/home/ubuntu/.tiup/bin/tiup cluster check -y --apply /home/ubuntu/topology.yaml" ubuntu
+su -c "/home/ubuntu/.tiup/bin/tiup cluster deploy -y tidb-cluster v8.5.1 /home/ubuntu/topology.yaml" ubuntu
+
+# start tidb cluster
+su -c "/home/ubuntu/.tiup/bin/tiup cluster start tidb-cluster --init -y" ubuntu
 EOS
 }
