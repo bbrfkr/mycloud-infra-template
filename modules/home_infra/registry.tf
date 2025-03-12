@@ -52,14 +52,14 @@ resource "openstack_networking_port_v2" "registry_port" {
 
 resource "openstack_compute_instance_v2" "registry_instance" {
   name      = "${var.environment_name}-registry"
+  image_id = var.registry_image_id
   flavor_id = var.registry_flavor_id
   key_pair  = var.key_pair_name
   block_device {
     uuid                  = var.registry_image_id
     source_type           = "image"
-    volume_size           = 30
     boot_index            = 0
-    destination_type      = "volume"
+    destination_type      = "local"
     delete_on_termination = true
   }
   network {

@@ -24,14 +24,14 @@ resource "openstack_networking_port_v2" "bastion_port" {
 
 resource "openstack_compute_instance_v2" "bastion_instance" {
   name      = "${var.environment_name}-bastion"
+  image_id = var.image_id
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   block_device {
     uuid                  = var.image_id
     source_type           = "image"
-    volume_size           = 10
     boot_index            = 0
-    destination_type      = "volume"
+    destination_type      = "local"
     delete_on_termination = true
   }
   network {
