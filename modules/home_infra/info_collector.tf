@@ -20,7 +20,7 @@ resource "openstack_networking_port_v2" "info_collector_port" {
 
 resource "openstack_compute_instance_v2" "info_collector_instance" {
   name      = "${var.environment_name}-info-collector"
-  image_id = var.info_collector_image_id
+  image_id  = var.info_collector_image_id
   flavor_id = var.info_collector_flavor_id
   key_pair  = var.key_pair_name
   block_device {

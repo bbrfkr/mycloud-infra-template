@@ -56,7 +56,7 @@ resource "openstack_blockstorage_volume_v3" "node_data_volumes" {
 resource "openstack_compute_instance_v2" "nodes" {
   for_each  = openstack_networking_port_v2.node_ports
   name      = "${var.environment_name}-mongodb-${each.key}"
-  image_id = var.image_id
+  image_id  = var.image_id
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   network {

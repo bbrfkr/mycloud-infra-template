@@ -99,7 +99,7 @@ resource "openstack_blockstorage_volume_v3" "master_volumes" {
 resource "openstack_compute_instance_v2" "masters" {
   for_each  = openstack_networking_port_v2.master_ports
   name      = "${var.environment_name}-elasticsearch-master-${each.key}"
-  image_id = var.image_id
+  image_id  = var.image_id
   flavor_id = var.master_flavor_id
   key_pair  = var.key_pair_name
   network {
@@ -216,7 +216,7 @@ resource "openstack_blockstorage_volume_v3" "data_volumes" {
 resource "openstack_compute_instance_v2" "data" {
   for_each  = openstack_networking_port_v2.data_ports
   name      = "${var.environment_name}-elasticsearch-data-${each.key}"
-  image_id = var.image_id
+  image_id  = var.image_id
   flavor_id = var.data_flavor_id
   key_pair  = var.key_pair_name
   network {

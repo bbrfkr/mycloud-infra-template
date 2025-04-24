@@ -38,7 +38,7 @@ resource "openstack_networking_port_v2" "tidb_ports" {
 resource "openstack_compute_instance_v2" "tidb" {
   for_each  = openstack_networking_port_v2.tidb_ports
   name      = "${var.environment_name}-tidb-tidb-${each.key}"
-  image_id = var.image_id
+  image_id  = var.image_id
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   network {
@@ -97,7 +97,7 @@ resource "openstack_networking_port_v2" "pd_ports" {
 resource "openstack_compute_instance_v2" "pd" {
   for_each  = openstack_networking_port_v2.pd_ports
   name      = "${var.environment_name}-tidb-pd-${each.key}"
-  image_id = var.image_id
+  image_id  = var.image_id
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   network {
@@ -162,7 +162,7 @@ resource "openstack_blockstorage_volume_v3" "tikv_data_volumes" {
 resource "openstack_compute_instance_v2" "tikv" {
   for_each  = openstack_networking_port_v2.tikv_ports
   name      = "${var.environment_name}-tidb-tikv-${each.key}"
-  image_id = var.image_id
+  image_id  = var.image_id
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   network {
@@ -243,7 +243,7 @@ resource "openstack_blockstorage_volume_v3" "tiflash_data_volumes" {
 resource "openstack_compute_instance_v2" "tiflash" {
   for_each  = openstack_networking_port_v2.tiflash_ports
   name      = "${var.environment_name}-tidb-tiflash-${each.key}"
-  image_id = var.image_id
+  image_id  = var.image_id
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   network {
@@ -328,7 +328,7 @@ resource "openstack_compute_instance_v2" "controller" {
     openstack_compute_instance_v2.tiflash
   ]
   name      = "${var.environment_name}-tidb-controller"
-  image_id = var.image_id
+  image_id  = var.image_id
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   network {
@@ -374,11 +374,11 @@ mkdir -p /var/lib/tidb/data
 su -c 'echo "${templatefile(
   "${path.module}/topology.yaml.tftpl",
   {
-    pd_servers: [for port in openstack_networking_port_v2.pd_ports : port.all_fixed_ips[0]],
-    tidb_servers: [for port in openstack_networking_port_v2.tidb_ports : port.all_fixed_ips[0]],
-    tikv_servers: [for port in openstack_networking_port_v2.tikv_ports : port.all_fixed_ips[0]],
-    tiflash_servers: [for port in openstack_networking_port_v2.tiflash_ports : port.all_fixed_ips[0]],
-    controller_server: openstack_networking_port_v2.controller_port.all_fixed_ips[0]
+    pd_servers : [for port in openstack_networking_port_v2.pd_ports : port.all_fixed_ips[0]],
+    tidb_servers : [for port in openstack_networking_port_v2.tidb_ports : port.all_fixed_ips[0]],
+    tikv_servers : [for port in openstack_networking_port_v2.tikv_ports : port.all_fixed_ips[0]],
+    tiflash_servers : [for port in openstack_networking_port_v2.tiflash_ports : port.all_fixed_ips[0]],
+    controller_server : openstack_networking_port_v2.controller_port.all_fixed_ips[0]
   }
 )}" > /home/ubuntu/topology.yaml' ubuntu
 
