@@ -1,45 +1,45 @@
-resource "openstack_networking_secgroup_v2" "ai_server_sg" {
-  name        = "${var.environment_name}-ai-server-sg-${var.resource_suffix}"
-  description = "${var.environment_name}-ai-server-sg-${var.resource_suffix}"
+resource "openstack_networking_secgroup_v2" "gen_2d_server_sg" {
+  name        = "${var.environment_name}-gen-2d-server-sg-${var.resource_suffix}"
+  description = "${var.environment_name}-gen-2d-server-sg-${var.resource_suffix}"
 }
 
-resource "openstack_networking_secgroup_rule_v2" "ai_server_sg_rule_1" {
+resource "openstack_networking_secgroup_rule_v2" "gen_2d_server_sg_rule_1" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
-  port_range_min    = 11434
-  port_range_max    = 11434
+  port_range_min    = 7860
+  port_range_max    = 7860
   remote_ip_prefix  = "0.0.0.0/0"
-  security_group_id = openstack_networking_secgroup_v2.ai_server_sg.id
+  security_group_id = openstack_networking_secgroup_v2.gen_2d_server_sg.id
 }
 
-resource "openstack_networking_secgroup_rule_v2" "ai_server_sg_rule_2" {
-  direction         = "ingress"
-  ethertype         = "IPv4"
-  protocol          = "tcp"
-  port_range_min    = 8080
-  port_range_max    = 8080
-  remote_ip_prefix  = "0.0.0.0/0"
-  security_group_id = openstack_networking_secgroup_v2.ai_server_sg.id
-}
-
-resource "openstack_networking_secgroup_rule_v2" "ai_server_sg_rule_99" {
+resource "openstack_networking_secgroup_rule_v2" "gen_2d_server_sg_rule_99" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
   port_range_min    = 22
   port_range_max    = 22
   remote_group_id   = var.bastion_sg_id
-  security_group_id = openstack_networking_secgroup_v2.ai_server_sg.id
+  security_group_id = openstack_networking_secgroup_v2.gen_2d_server_sg.id
 }
 
-resource "openstack_networking_port_v2" "ai_server_port" {
+resource "openstack_networking_port_v2" "gen_2d_server_port" {
   network_id         = var.network_id
-  security_group_ids = [openstack_networking_secgroup_v2.ai_server_sg.id]
+  security_group_ids = [openstack_networking_secgroup_v2.gen_2d_server_sg.id]
 }
 
-resource "openstack_compute_instance_v2" "ai_server_instance" {
-  name      = "${var.environment_name}-ai-server-${var.resource_suffix}"
+resource "openstack_blockstorage_volume_v3" "gen_2d_models_volume" {
+  name = "gen-2d-models-volume-${var.resource_suffix}"
+  size = var.models_volume_size
+}
+
+resource "openstack_blockstorage_volume_v3" "gen_2d_photo_prism_volume" {
+  name = "gen-2d-photo-prism-volume-${var.resource_suffix}"
+  size = var.photo_prism_volume_size
+}
+
+resource "openstack_compute_instance_v2" "gen_2d_server_instance" {
+  name      = "${var.environment_name}-gen-2d-server-${var.resource_suffix}"
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   image_id  = var.image_id
@@ -50,8 +50,22 @@ resource "openstack_compute_instance_v2" "ai_server_instance" {
     destination_type      = "local"
     delete_on_termination = true
   }
+  block_device {
+    uuid                  = openstack_blockstorage_volume_v3.gen_2d_models_volume.id
+    source_type           = "volume"
+    boot_index            = 1
+    destination_type      = "volume"
+    delete_on_termination = false
+  }
+  block_device {
+    uuid                  = openstack_blockstorage_volume_v3.gen_2d_photo_prism_volume.id
+    source_type           = "volume"
+    boot_index            = 2
+    destination_type      = "volume"
+    delete_on_termination = false
+  }
   network {
-    port = openstack_networking_port_v2.ai_server_port.id
+    port = openstack_networking_port_v2.gen_2d_server_port.id
   }
   user_data = <<EOS
 #!/bin/sh
@@ -116,17 +130,14 @@ WantedBy=timers.target
 EOF
 systemctl enable --now gpu-fan-control@0.service
 systemctl enable --now gpu-fan-control@0.timer
-systemctl enable --now gpu-fan-control@1.service
-systemctl enable --now gpu-fan-control@1.timer
-systemctl enable --now gpu-fan-control@2.service
-systemctl enable --now gpu-fan-control@2.timer
-systemctl enable --now gpu-fan-control@3.service
-systemctl enable --now gpu-fan-control@3.timer
 
-# mount nfs mount point
-apt-get update && apt-get install -y nfs-common
-mkdir -p /usr/share/ollama/.ollama/models
-echo 'ollama-nfs.home.dynamis.bbrfkr.net:/share/models /usr/share/ollama/.ollama/models nfs defaults 0 0' >> /etc/fstab
+# mount volume
+lsblk -f /dev/vdb | grep xfs > /dev/null
+if [ $? -ne 0 ] ; then
+    mkfs -t xfs /dev/vdb
+fi
+mkdir -p /home/ubuntu/.cache/huggingface
+echo '/dev/vdb /usr/share/ollama/.ollama/models xfs defaults 0 0' >> /etc/fstab
 mount -a
 
 # configure registry mirrors
@@ -181,11 +192,11 @@ systemctl enable --now ollama
 EOS
 }
 
-resource "openstack_networking_floatingip_v2" "ai_server_fip" {
+resource "openstack_networking_floatingip_v2" "gen_2d_server_fip" {
   pool = var.external_subnet_name
 }
 
-resource "openstack_networking_floatingip_associate_v2" "ai_server_fip_associate" {
-  floating_ip = openstack_networking_floatingip_v2.ai_server_fip.address
-  port_id     = openstack_networking_port_v2.ai_server_port.id
+resource "openstack_networking_floatingip_associate_v2" "gen_2d_server_fip_associate" {
+  floating_ip = openstack_networking_floatingip_v2.gen_2d_server_fip.address
+  port_id     = openstack_networking_port_v2.gen_2d_server_port.id
 }
