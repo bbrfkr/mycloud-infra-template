@@ -73,3 +73,8 @@ data "terraform_remote_state" "bastion" {
     use_path_style              = true
   }
 }
+
+data "openstack_keymanager_secret_v1" "huggingface_hf_token" {
+  name        = "huggingface_hf_token"
+  secret_type = "opaque"
+}

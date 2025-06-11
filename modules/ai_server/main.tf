@@ -7,18 +7,8 @@ resource "openstack_networking_secgroup_rule_v2" "ai_server_sg_rule_1" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
-  port_range_min    = 11434
-  port_range_max    = 11434
-  remote_ip_prefix  = "0.0.0.0/0"
-  security_group_id = openstack_networking_secgroup_v2.ai_server_sg.id
-}
-
-resource "openstack_networking_secgroup_rule_v2" "ai_server_sg_rule_2" {
-  direction         = "ingress"
-  ethertype         = "IPv4"
-  protocol          = "tcp"
-  port_range_min    = 8080
-  port_range_max    = 8080
+  port_range_min    = 8000
+  port_range_max    = 8000
   remote_ip_prefix  = "0.0.0.0/0"
   security_group_id = openstack_networking_secgroup_v2.ai_server_sg.id
 }
@@ -114,70 +104,43 @@ Persistent=true
 [Install]
 WantedBy=timers.target
 EOF
-systemctl enable --now gpu-fan-control@0.service
-systemctl enable --now gpu-fan-control@0.timer
-systemctl enable --now gpu-fan-control@1.service
-systemctl enable --now gpu-fan-control@1.timer
-systemctl enable --now gpu-fan-control@2.service
-systemctl enable --now gpu-fan-control@2.timer
-systemctl enable --now gpu-fan-control@3.service
-systemctl enable --now gpu-fan-control@3.timer
+for index in $(seq 0 ${var.gpu_count - 1}); do
+  systemctl enable --now gpu-fan-control@$${index}.service
+  systemctl enable --now gpu-fan-control@$${index}.timer
+done
 
 # mount nfs mount point
 apt-get update && apt-get install -y nfs-common
-mkdir -p /usr/share/ollama/.ollama/models
-echo 'ollama-nfs.home.dynamis.bbrfkr.net:/share/models /usr/share/ollama/.ollama/models nfs defaults 0 0' >> /etc/fstab
+mkdir -p /home/ubuntu/.cache/huggingface
+echo 'aimodel-nfs.home.dynamis.bbrfkr.net:/share/huggingface /home/ubuntu/.cache/huggingface nfs defaults 0 0' >> /etc/fstab
 mount -a
 
-# configure registry mirrors
-cat <<EOF > /etc/docker/daemon.json
-{
-  "registry-mirrors": ["https://registry.home.dynamis.bbrfkr.net"]
-}
-EOF
-nvidia-ctk runtime configure --runtime=docker
-systemctl restart docker
-
-# configure ollama
-mkdir -p /var/lib/ollama
-cat <<EOF > /var/lib/ollama/compose.yaml
-services:
-  ollama:
-    restart: always
-    image: ollama/ollama
-    ports:
-      - 11434:11434
-    volumes:
-      - /usr/share/ollama/.ollama/models:/root/.ollama/models
-    environment:
-      - "OLLAMA_FLASH_ATTENTION=1"
-      - "OLLAMA_KV_CACHE_TYPE=q8_0"
-      - "OLLAMA_KEEP_ALIVE=-1"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-EOF
-cat <<EOF > /etc/systemd/system/ollama.service
+# configure vllm
+cat <<EOF > /etc/systemd/system/vllm.service
 [Unit]
-Description=Ollama
-After=docker.service
+Description=vLLM
+After=network.service
 
 [Service]
 Type=simple
-WorkingDirectory=/var/lib/ollama
-ExecStart=/usr/bin/docker compose up
-ExecStop=/usr/bin/docker compose down
+User=ubuntu
+WorkingDirectory=/home/ubuntu
+Environment=HF_TOKEN=${var.huggingface_hf_token}
+ExecStart=/bin/bash -c "/home/ubuntu/.pyenv/shims/huggingface-cli scan-cache && /home/ubuntu/.pyenv/shims/vllm serve ${var.model_name} ${var.vllm_command_args}"
 Restart=yes
 
 [Install]
 WantedBy=multi-user.target
 EOF
 systemctl daemon-reload
-systemctl enable --now ollama
+systemctl enable --now vllm
+
+# configure nginx
+cat <<EOF > /
+
+EOF
+systemctl daemon-reload
+systemctl ena
 EOS
 }
 

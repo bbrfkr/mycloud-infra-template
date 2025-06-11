@@ -34,6 +34,20 @@ variable "resource_suffix" {
   default = ""
 }
 
-variable "ollama_volume_size" {
+variable "model_name" {
+  type = string
+}
+
+variable "gpu_count" {
   type = number
+}
+
+variable "huggingface_hf_token" {
+  type = string
+  default = ""
+}
+
+variable "vllm_command_args" {
+  type = string
+  default = ""
 }
