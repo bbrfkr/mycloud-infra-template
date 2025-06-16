@@ -15,6 +15,10 @@ variable "key_pair_name" {
   default = "bbrfkr"
 }
 
+variable "bastion_sg_id" {
+  type = string
+}
+
 variable "flavor_id" {
   type = string
 }
@@ -33,4 +37,8 @@ variable "app_name" {
 
 variable "volume_size" {
   type = number
+}
+
+variable "docker_app_tcp_ports" {
+  type = list(number)
 }

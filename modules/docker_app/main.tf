@@ -14,12 +14,12 @@ resource "openstack_networking_secgroup_rule_v2" "docker_app_sg_rule_1" {
 }
 
 resource "openstack_networking_secgroup_rule_v2" "docker_app_sg_tcp_rules" {
-  for_each          = set(var.docker_app_tcp_ports)
+  for_each          = toset([for port in var.docker_app_tcp_ports : tostring(port)])
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
-  port_range_min    = each.value
-  port_range_max    = each.value
+  port_range_min    = tonumber(each.value)
+  port_range_max    = tonumber(each.value)
   remote_ip_prefix  = "0.0.0.0/0"
   security_group_id = openstack_networking_secgroup_v2.docker_app_sg.id
 }
@@ -39,7 +39,7 @@ resource "openstack_compute_instance_v2" "docker_app_instance" {
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   block_device {
-    image_id              = var.image_id
+    uuid                  = var.image_id
     source_type           = "image"
     boot_index            = 0
     destination_type      = "volume"
@@ -48,6 +48,12 @@ resource "openstack_compute_instance_v2" "docker_app_instance" {
   }
   network {
     port = openstack_networking_port_v2.docker_app_port.id
+  }
+
+  lifecycle {
+    ignore_changes = [
+      image_id,
+    ]
   }
 }
 
