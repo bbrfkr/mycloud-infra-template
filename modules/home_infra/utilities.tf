@@ -6,6 +6,21 @@ resource "openstack_dns_zone_v2" "zone" {
   type        = "PRIMARY"
 }
 
+resource "openstack_dns_zone_v2" "external_zone" {
+  name        = "external.dynamis.bbrfkr.net."
+  description = "for external"
+  email       = "bbrfkr@gmail.com"
+}
+
+resource "openstack_dns_recordset_v2" "external_wildcard_rs" {
+  zone_id     = openstack_dns_zone_v2.external_zone.id
+  name        = "*.external.dynamis.bbrfkr.net."
+  description = "for external"
+  ttl         = 60
+  type        = "CNAME"
+  records     = ["endpoint.bbrfkr.net."]
+}
+
 resource "openstack_networking_secgroup_v2" "allow_all_sg" {
   name        = "allow-all"
   description = "allow-all"

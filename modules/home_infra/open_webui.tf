@@ -1,12 +1,3 @@
-resource "openstack_dns_recordset_v2" "ollama_open_webui_1_rs" {
-  zone_id     = openstack_dns_zone_v2.zone.id
-  name        = "open-webui.${openstack_dns_zone_v2.zone.name}"
-  description = "for open webui"
-  ttl         = 600
-  type        = "CNAME"
-  records     = ["prd-router.dynamis.bbrfkr.net."]
-}
-
 resource "openstack_networking_secgroup_v2" "open_webui_sg" {
   name        = "${var.environment_name}-open-webui-sg"
   description = "${var.environment_name}-open-webui-sg"

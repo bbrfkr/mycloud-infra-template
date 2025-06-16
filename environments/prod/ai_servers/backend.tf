@@ -7,7 +7,7 @@ terraform {
   }
   backend "s3" {
     bucket = "mycloud-tfstates"
-    key    = "prod/ai_server_2"
+    key    = "prod/ai_servers"
     endpoints = {
       s3 = "https://swift.dynamis.bbrfkr.net"
     }

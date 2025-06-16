@@ -26,7 +26,7 @@ variable "registry_image_id" {
 }
 
 variable "registry_flavor_id" {
-  type = string
+  type    = string
   default = "3419f213-0120-493c-b3c4-c2996ec17b34"
 }
 
@@ -37,7 +37,7 @@ variable "info_collector_image_id" {
 }
 
 variable "info_collector_flavor_id" {
-  type = string
+  type    = string
   default = "3419f213-0120-493c-b3c4-c2996ec17b34"
 }
 
