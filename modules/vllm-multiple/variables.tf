@@ -34,10 +34,25 @@ variable "resource_suffix" {
   default = ""
 }
 
-variable "models_volume_size" {
+variable "gpu_count" {
   type = number
 }
 
-variable "photo_prism_volume_size" {
+variable "gpu_power_limit" {
   type = number
+}
+
+variable "huggingface_hf_token" {
+  type    = string
+  default = ""
+}
+
+variable "models_config" {
+  type = list(
+    object({
+      model_name = string
+      vllm_command_args = string
+      port = number
+    })
+  )
 }

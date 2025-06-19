@@ -1,5 +1,5 @@
 module "dify_docker" {
-  source           = "../../../modules/docker_app"
+  source           = "../../../modules/docker_app_prod"
   environment_name = data.terraform_remote_state.common.outputs.environment_name
   project_id       = data.terraform_remote_state.global_common.outputs.project_id
   // ubuntu-noble-docker
@@ -10,6 +10,6 @@ module "dify_docker" {
   network_id           = data.terraform_remote_state.networking.outputs.all.network_id
   external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
   app_name             = "dify-docker"
-  docker_app_tcp_ports = ["8080"]
+  docker_app_tcp_ports = ["80"]
   bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
 }

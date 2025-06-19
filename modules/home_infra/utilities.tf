@@ -6,6 +6,15 @@ resource "openstack_dns_zone_v2" "zone" {
   type        = "PRIMARY"
 }
 
+resource "openstack_dns_recordset_v2" "home_wildcard_rs" {
+  zone_id     = openstack_dns_zone_v2.zone.id
+  name        = "*.home.dynamis.bbrfkr.net."
+  description = "for home"
+  ttl         = 60
+  type        = "CNAME"
+  records     = ["prd-router.dynamis.bbrfkr.net."]
+}
+
 resource "openstack_dns_zone_v2" "external_zone" {
   name        = "external.dynamis.bbrfkr.net."
   description = "for external"

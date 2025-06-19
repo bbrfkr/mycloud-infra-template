@@ -3,7 +3,7 @@ resource "openstack_networking_secgroup_v2" "open_webui_sg" {
   description = "${var.environment_name}-open-webui-sg"
 }
 
-resource "openstack_networking_secgroup_rule_v2" "open_webui_sg_rule_1" {
+resource "openstack_networking_secgroup_rule_v2" "open_webui_sg_rule_2" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
@@ -89,9 +89,6 @@ services:
       - 8080:8080
     volumes:
       - /var/lib/open-webui/data:/app/backend/data
-    environment:
-      - "OLLAMA_BASE_URL=${var.open_webui_ollama_base_url}"
-      - "WEBUI_SECRET_KEY="
 EOF
 cat <<EOF > /etc/systemd/system/open-webui.service
 [Unit]
