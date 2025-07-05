@@ -42,3 +42,8 @@ variable "volume_size" {
 variable "docker_app_tcp_ports" {
   type = list(number)
 }
+
+variable "terminate_instance" {
+  type = bool
+  default = false  
+}

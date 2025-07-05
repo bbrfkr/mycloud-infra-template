@@ -131,6 +131,7 @@ User=ubuntu
 WorkingDirectory=/home/ubuntu
 Environment=HF_TOKEN=${var.huggingface_hf_token}
 Environment=NCCL_P2P_DISABLE=1
+Environment=VLLM_ALLOW_LONG_MAX_MODEL_LEN=1
 ExecStart=/bin/bash -c "/home/ubuntu/.pyenv/shims/huggingface-cli scan-cache && /home/ubuntu/.pyenv/shims/vllm serve ${config.model_name} --port ${config.port} ${config.vllm_command_args}"
 Restart=yes
 

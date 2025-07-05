@@ -1,5 +1,5 @@
 module "dify_docker" {
-  source           = "../../../modules/docker_app_prod"
+  source           = "../../../modules/docker_app"
   environment_name = data.terraform_remote_state.common.outputs.environment_name
   project_id       = data.terraform_remote_state.global_common.outputs.project_id
   // ubuntu-noble-docker

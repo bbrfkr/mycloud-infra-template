@@ -10,6 +10,6 @@ module "n8n_docker" {
   network_id           = data.terraform_remote_state.networking.outputs.all.network_id
   external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
   app_name             = "n8n-docker"
-  docker_app_tcp_ports = ["80"]
+  docker_app_tcp_ports = ["5678"]
   bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
 }

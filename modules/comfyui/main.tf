@@ -1,35 +1,35 @@
-resource "openstack_networking_secgroup_v2" "stable_diffusion_sg" {
-  name        = "${var.environment_name}-stable-diffusion-sg-${var.resource_suffix}"
-  description = "${var.environment_name}-stable-diffusion-sg-${var.resource_suffix}"
+resource "openstack_networking_secgroup_v2" "comfyui_sg" {
+  name        = "${var.environment_name}-comfyui-sg-${var.resource_suffix}"
+  description = "${var.environment_name}-comfyui-sg-${var.resource_suffix}"
 }
 
-resource "openstack_networking_secgroup_rule_v2" "stable_diffusion_sg_rule_1" {
+resource "openstack_networking_secgroup_rule_v2" "comfyui_sg_rule_1" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
-  port_range_min    = 7860
-  port_range_max    = 7860
+  port_range_min    = 8188
+  port_range_max    = 8188
   remote_ip_prefix  = "0.0.0.0/0"
-  security_group_id = openstack_networking_secgroup_v2.stable_diffusion_sg.id
+  security_group_id = openstack_networking_secgroup_v2.comfyui_sg.id
 }
 
-resource "openstack_networking_secgroup_rule_v2" "stable_diffusion_sg_rule_99" {
+resource "openstack_networking_secgroup_rule_v2" "comfyui_sg_rule_99" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
   port_range_min    = 22
   port_range_max    = 22
   remote_group_id   = var.bastion_sg_id
-  security_group_id = openstack_networking_secgroup_v2.stable_diffusion_sg.id
+  security_group_id = openstack_networking_secgroup_v2.comfyui_sg.id
 }
 
-resource "openstack_networking_port_v2" "stable_diffusion_port" {
+resource "openstack_networking_port_v2" "comfyui_port" {
   network_id         = var.network_id
-  security_group_ids = [openstack_networking_secgroup_v2.stable_diffusion_sg.id]
+  security_group_ids = [openstack_networking_secgroup_v2.comfyui_sg.id]
 }
 
-resource "openstack_compute_instance_v2" "stable_diffusion_instance" {
-  name      = "${var.environment_name}-stable-diffusion-${var.resource_suffix}"
+resource "openstack_compute_instance_v2" "comfyui_instance" {
+  name      = "${var.environment_name}-comfyui-${var.resource_suffix}"
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   image_id  = var.image_id
@@ -41,7 +41,7 @@ resource "openstack_compute_instance_v2" "stable_diffusion_instance" {
     delete_on_termination = true
   }
   network {
-    port = openstack_networking_port_v2.stable_diffusion_port.id
+    port = openstack_networking_port_v2.comfyui_port.id
   }
   user_data = <<EOS
 #!/bin/sh
@@ -112,53 +112,41 @@ done
 # mount nfs mount point
 apt-get update && apt-get install -y nfs-common
 
-share_point=/share/huggingface
-mount_point=/home/ubuntu/.cache/huggingface
-mkdir -p $${mount_point}
-echo "aimodel-nfs.home.dynamis.bbrfkr.net:$${share_point} $${mount_point} nfs defaults 0 0" >> /etc/fstab
-share_point=/share/stable_diffusion
-mount_point=/var/lib/stable_diffusion
+share_point=/share/comfyui
+mount_point=/home/ubuntu/comfy
 mkdir -p $${mount_point}
 echo "aimodel-nfs.home.dynamis.bbrfkr.net:$${share_point} $${mount_point} nfs defaults 0 0" >> /etc/fstab
 mount -a
 
-# clone source code
-cd /var/lib/stable_diffusion
-if [ ! -d stable-diffusion-webui ]; then
-  git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui
-  chown -R ubuntu:ubuntu stable-diffusion-webui
+if [ ! -d /home/ubuntu/comfy/ComfyUI ]; then
+  comfy-cli install
 fi
 
-# configure sd-webui
-apt-get install -y google-perftools
-
-cat <<EOF > /etc/systemd/system/sd-webui.service
+cat <<EOF > /etc/systemd/system/comfyui.service
 [Unit]
-Description=stable diffusion webui
+Description=comfyui
 After=network.service
 
 [Service]
 Type=simple
 User=ubuntu
-WorkingDirectory=/var/lib/stable_diffusion/stable-diffusion-webui
-Environment=HF_TOKEN=${var.huggingface_hf_token}
-Environment=python_cmd=python3.11
-ExecStart=/bin/bash -c "huggingface-cli scan-cache && ./webui.sh --listen"
+WorkingDirectory=/home/ubuntu
+ExecStart=/bin/bash -c "comfy-cli --skip-prompt install --restore --nvidia && comfy-cli --skip-prompt launch -- --listen 0.0.0.0"
 Restart=yes
 
 [Install]
 WantedBy=multi-user.target
 EOF
 systemctl daemon-reload
-systemctl enable --now sd-webui
+systemctl enable --now comfyui
 EOS
 }
 
-resource "openstack_networking_floatingip_v2" "stable_diffusion_fip" {
+resource "openstack_networking_floatingip_v2" "comfyui_fip" {
   pool = var.external_subnet_name
 }
 
-resource "openstack_networking_floatingip_associate_v2" "stable_diffusion_fip_associate" {
-  floating_ip = openstack_networking_floatingip_v2.stable_diffusion_fip.address
-  port_id     = openstack_networking_port_v2.stable_diffusion_port.id
+resource "openstack_networking_floatingip_associate_v2" "comfyui_fip_associate" {
+  floating_ip = openstack_networking_floatingip_v2.comfyui_fip.address
+  port_id     = openstack_networking_port_v2.comfyui_port.id
 }

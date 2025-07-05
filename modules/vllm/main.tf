@@ -128,7 +128,7 @@ Type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu
 Environment=HF_TOKEN=${var.huggingface_hf_token}
-Environment=NCCL_P2P_DISABLE=1
+Environment=NCCL_P2P_DISABLE=${var.vllm_nccl_p2p_disable}
 ExecStart=/bin/bash -c "/home/ubuntu/.pyenv/shims/huggingface-cli scan-cache && /home/ubuntu/.pyenv/shims/vllm serve ${var.model_name} ${var.vllm_command_args}"
 Restart=yes
 

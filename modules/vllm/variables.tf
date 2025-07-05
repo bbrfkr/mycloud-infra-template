@@ -55,3 +55,8 @@ variable "vllm_command_args" {
   type    = string
   default = ""
 }
+
+variable "vllm_nccl_p2p_disable" {
+  type    = number
+  default = 1
+}

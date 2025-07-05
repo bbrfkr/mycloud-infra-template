@@ -23,8 +23,8 @@ export DEBIAN_FRONTEND=noninteractive
 # mount nfs share and volume
 apt-get update && apt-get install -y nfs-common
 
-share_point=/share/stable_diffusion
-mount_point=/var/lib/stable_diffusion
+share_point=/share/comfyui
+mount_point=/var/lib/comfyui
 mkdir -p $${mount_point}
 echo "aimodel-nfs.home.dynamis.bbrfkr.net:$${share_point} $${mount_point} nfs defaults 0 0" >> /etc/fstab
 
@@ -91,7 +91,7 @@ services:
       PHOTOPRISM_SITE_AUTHOR: ""                     
     working_dir: "/photoprism" 
     volumes:
-      - "/var/lib/stable_diffusion/stable-diffusion-webui/outputs/:/photoprism/originals"
+      - "/var/lib/comfyui/ComfyUI/output:/photoprism/originals/comfyui"
       - "./storage:/photoprism/storage"
   mariadb:
     image: mariadb:11

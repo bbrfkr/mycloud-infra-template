@@ -33,14 +33,24 @@ resource "openstack_networking_port_v2" "docker_app_port" {
   security_group_ids = [openstack_networking_secgroup_v2.docker_app_sg.id]
 }
 
+resource "openstack_blockstorage_volume_v3" "docker_app_volume" {
+  name     = var.app_name
+  size     = var.volume_size
+  image_id = var.image_id
+
+  lifecycle {
+    ignore_changes = [image_id]
+  }
+}
+
 resource "openstack_compute_instance_v2" "docker_app_instance" {
+  count     = var.terminate_instance ? 0 : 1
   name      = "${var.environment_name}-${var.app_name}"
-  image_id  = var.image_id
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name
   block_device {
-    uuid                  = var.image_id
-    source_type           = "image"
+    uuid                  = openstack_blockstorage_volume_v3.docker_app_volume.id
+    source_type           = "volume"
     boot_index            = 0
     destination_type      = "volume"
     volume_size           = var.volume_size
