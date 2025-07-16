@@ -2,7 +2,7 @@ locals {
   completion_gpu_count = 1
   additional_gpu_count = 1
   vllm_gpu_count       = 4
-  vllm_image_id        = "50bccebf-20d2-4416-818a-b29c0689d483"
+  vllm_image_id        = "a40ab8c3-25e9-40d6-bb9d-e56e47fa6b03"
   comfyui_gpu_count    = 2
   comfyui_image_id     = "cb5253bb-4428-41ef-bd87-a52e640fa745"
   p2_xlarge_id         = "4840358c-4b90-4d54-a97e-f321a646ee6b"
@@ -64,7 +64,7 @@ module "vllm_1" {
   gpu_count            = local.vllm_gpu_count
   gpu_power_limit      = 250
   model_name           = "RedHatAI/DeepSeek-R1-Distill-Qwen-32B-FP8-dynamic"
-  vllm_command_args    = "--tensor-parallel-size ${local.vllm_gpu_count} --max-model-len 65536 --max-num-seqs 4 --gpu-memory-utilization 0.85"
+  vllm_command_args    = "--tensor-parallel-size ${local.vllm_gpu_count} --max-model-len 73728 --max-num-seqs 2 --gpu-memory-utilization 0.85"
   huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
 }
 
