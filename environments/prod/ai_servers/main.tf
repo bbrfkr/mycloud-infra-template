@@ -24,6 +24,7 @@ module "completion" {
   gpu_power_limit      = 115
   huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
   model_name           = "Qwen/Qwen2.5-Coder-1.5B"
+  vllm_command_args    = "--served-model-name bbrfkr-completion"
 }
 
 module "additional" {
@@ -41,7 +42,7 @@ module "additional" {
   models_config = [
     {
       model_name           = "nomic-ai/nomic-embed-text-v1.5"
-      vllm_command_args = "--gpu-memory-utilization 0.5 --task embedding --trust-remote-code --max-model-len 8192"
+      vllm_command_args = "--served-model-name bbrfkr-embedding --gpu-memory-utilization 0.5 --task embedding --trust-remote-code --max-model-len 8192"
       port = 8000
     },
     {
@@ -64,7 +65,7 @@ module "vllm_1" {
   gpu_count            = local.vllm_gpu_count
   gpu_power_limit      = 250
   model_name           = "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
-  vllm_command_args    = "--tensor-parallel-size ${local.vllm_gpu_count} --max-model-len 73728 --max-num-seqs 2 --gpu-memory-utilization 0.85 --enable-expert-parallel"
+  vllm_command_args    = "--served-model-name bbrfkr-llm --tensor-parallel-size ${local.vllm_gpu_count} --max-model-len 155648 --max-num-seqs 1 --gpu-memory-utilization 0.85 --enable-expert-parallel --tool-call-parser hermes --enable-auto-tool-choice"
   huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
 }
 
