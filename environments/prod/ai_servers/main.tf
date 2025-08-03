@@ -47,7 +47,7 @@ module "additional" {
     },
     {
       model_name           = "Qwen/Qwen3-Reranker-0.6B"
-      vllm_command_args = "--gpu-memory-utilization 0.5 --task score --max-model-len 8192"
+      vllm_command_args = "--served-model-name bbrfkr-reranker --gpu-memory-utilization 0.5 --task score --max-model-len 8192"
       port = 8001
     },
   ]
