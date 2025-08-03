@@ -63,7 +63,7 @@ module "vllm_1" {
   resource_suffix      = "1"
   gpu_count            = local.vllm_gpu_count
   gpu_power_limit      = 250
-  model_name           = "RedHatAI/DeepSeek-R1-Distill-Qwen-32B-FP8-dynamic"
+  model_name           = "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
   vllm_command_args    = "--tensor-parallel-size ${local.vllm_gpu_count} --max-model-len 73728 --max-num-seqs 2 --gpu-memory-utilization 0.85"
   huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
 }
@@ -74,7 +74,7 @@ module "comfyui_1" {
   network_id           = data.terraform_remote_state.networking.outputs.all.network_id
   bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
   external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
-  flavor_id            = local.p2_4xlarge_id
+  flavor_id            = local.p2_2xlarge_id
   image_id             = local.comfyui_image_id
   resource_suffix      = "1"
   gpu_count            = local.comfyui_gpu_count
