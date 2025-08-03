@@ -64,7 +64,7 @@ module "vllm_1" {
   gpu_count            = local.vllm_gpu_count
   gpu_power_limit      = 250
   model_name           = "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
-  vllm_command_args    = "--tensor-parallel-size ${local.vllm_gpu_count} --max-model-len 73728 --max-num-seqs 2 --gpu-memory-utilization 0.85"
+  vllm_command_args    = "--tensor-parallel-size ${local.vllm_gpu_count} --max-model-len 73728 --max-num-seqs 2 --gpu-memory-utilization 0.85 --enable-expert-parallel"
   huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
 }
 
