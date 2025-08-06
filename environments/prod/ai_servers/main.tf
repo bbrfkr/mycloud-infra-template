@@ -65,7 +65,7 @@ module "vllm_1" {
   gpu_count            = local.vllm_gpu_count
   gpu_power_limit      = 250
   model_name           = "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
-  vllm_command_args    = "--served-model-name bbrfkr-llm --tensor-parallel-size ${local.vllm_gpu_count} --max-model-len 155648 --max-num-seqs 1 --gpu-memory-utilization 0.85 --enable-expert-parallel --tool-call-parser hermes --enable-auto-tool-choice"
+  vllm_command_args    = "--served-model-name bbrfkr-llm --tensor-parallel-size ${local.vllm_gpu_count} --max-model-len 155648 --max-num-seqs 1 --gpu-memory-utilization 0.85 --enable-expert-parallel --tool-call-parser qwen3_xml --tool-parser-plugin /home/ubuntu/.cache/huggingface/hub/models--Qwen--Qwen3-Coder-30B-A3B-Instruct-FP8/snapshots/b771c46af0ca185345753e6f973a4ce2b74205f0/qwen3coder_tool_parser.py --enable-auto-tool-choice"
   huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
 }
 
