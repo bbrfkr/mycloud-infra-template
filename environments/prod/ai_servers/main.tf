@@ -44,8 +44,8 @@ module "additional" {
   huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
   models_config = [
     {
-      model_name           = "BAAI/bge-base-en-v1.5"
-      vllm_command_args = "--served-model-name bbrfkr-embedding --gpu-memory-utilization 0.45 --task embed --trust-remote-code --max-model-len 8192"
+      model_name           = "nomic-ai/nomic-embed-text-v2-moe"
+      vllm_command_args = "--served-model-name bbrfkr-embedding --gpu-memory-utilization 0.45 --runner pooling --convert embed --trust-remote-code --max-model-len 1572864"
       port = 8000
     },
     {
