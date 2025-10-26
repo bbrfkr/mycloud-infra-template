@@ -1,0 +1,10 @@
+# openstack client
+openstackclient
+python-barbicanclient
+python-designateclient
+python-heatclient
+python-magnumclient
+python-manilaclient
+python-octaviaclient
+python-troveclient
+awscli_plugin_endpoint
