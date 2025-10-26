@@ -83,9 +83,26 @@ mount -a
 cd /var/lib/searxng
 test -d searxng-docker || git clone https://github.com/bbrfkr/searxng-docker
 cd searxng-docker
+cat <<EOF > settings.yml
+server:
+  bind_address: "0.0.0.0:8080"
+  secret_key: "$(openssl rand -hex 16)"
+
+ui:
+  default_locale: "ja"
+
+search:
+  use_default_engines: false
+  engines:
+    - name: google
+  result_count: ${var.searxng_search_result_count}
+  max_page: 1
+  timeout: ${var.searxng_search_timeout}
+EOF
 cat <<EOF > .env
-SEARXNG_UWSGI_WORKERS=${var.searxng_uwsgi_workers}
-SEARXNG_UWSGI_THREADS=${var.searxng_uwsgi_threads}
+SEARXNG_BASE_URL=${var.searxng_base_url}
+GRANIAN_WORKERS=${var.searxng_workers}
+SEARXNG_VALKEY_URL=valkey://cache:6379/0
 EOF
 
 cat <<EOF > /etc/systemd/system/searxng.service

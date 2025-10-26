@@ -85,12 +85,12 @@ variable "discord_developersio_hook_url" {
   type = string
 }
 
-variable "searxng_uwsgi_workers" {
-  type = number
-  default = 1
+variable "searxng_base_url" {
+  type = string
+  default = "http://localhost/"
 }
 
-variable "searxng_uwsgi_threads" {
+variable "searxng_workers" {
   type = number
   default = 1
 }

@@ -16,8 +16,8 @@ module "home_infra" {
   info_collector_flavor_id          = local.g1_medium_id
   open_webui_image_id               = local.docker_image_id
   open_webui_flavor_id              = local.g1_medium_id
-  searxng_uwsgi_workers             = 4
-  searxng_uwsgi_threads             = 4
+  searxng_base_url                  = "https://searxng.external.dynamis.bbrfkr.net/"
+  searxng_workers                   = 4
   searxng_flavor_id                 = local.g1_2xlarge_id
   searxng_image_id                  = local.docker_image_id
   openstack_admin_access_key_id     = base64decode(data.openstack_keymanager_secret_v1.openstack_admin_access_key_id.payload)

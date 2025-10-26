@@ -60,3 +60,8 @@ variable "vllm_nccl_p2p_disable" {
   type    = number
   default = 1
 }
+
+variable "vllm_use_flashinfer_mxfp4_bf16_moe" {
+  type = number
+  default = 0
+}
