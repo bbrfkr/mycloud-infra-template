@@ -63,14 +63,6 @@ resource "openstack_compute_instance_v2" "open_webui_instance" {
 #!/bin/sh
 export DEBIAN_FRONTEND=noninteractive
 
-# configure docker mirror
-cat <<EOF > /etc/docker/daemon.json
-{
-  "registry-mirrors": ["https://registry.home.dynamis.bbrfkr.net"]
-}
-EOF
-systemctl restart docker
-
 # mount volume
 lsblk -f /dev/vdb | grep xfs > /dev/null
 if [ $? -ne 0 ] ; then
@@ -80,26 +72,23 @@ mkdir -p /var/lib/open-webui
 echo '/dev/vdb /var/lib/open-webui xfs defaults 0 0' >> /etc/fstab
 mount -a
 
-cat <<EOF > /var/lib/open-webui/compose.yaml
-services:
-  open_webui:
-    restart: always
-    image: ghcr.io/open-webui/open-webui:main
-    ports:
-      - 8080:8080
-    volumes:
-      - /var/lib/open-webui/data:/app/backend/data
-EOF
+apt-get update && apt-get install -y python3-venv python3-pip
+if [ ! -d /var/lib/open-webui/venv ] ; then
+  python3 -m venv /var/lib/open-webui/venv
+  /var/lib/open-webui/venv/bin/pip install open-webui
+fi
+
+# configure open-webui
 cat <<EOF > /etc/systemd/system/open-webui.service
 [Unit]
-Description=Open WebUi
-After=docker.service
+Description=Open WebUI
+After=network.service
 
 [Service]
 Type=simple
-WorkingDirectory=/var/lib/open-webui
-ExecStart=/usr/bin/docker compose up
-ExecStop=/usr/bin/docker compose down
+User=root
+Environment=DATA_DIR=/var/lib/open-webui/data
+ExecStart=/bin/bash -c "/var/lib/open-webui/venv/bin/open-webui serve"
 Restart=yes
 
 [Install]

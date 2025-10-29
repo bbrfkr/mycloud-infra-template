@@ -58,6 +58,60 @@ EOF
 chmod +x /etc/rc.local
 /etc/rc.local
 
+# gpu fan control
+mkdir /var/lib/cron
+cat <<'EOF' > /var/lib/cron/gpu_fan_control.sh
+#!/bin/sh
+gpu_index=$1
+fan_index_0=$(expr $gpu_index \* 2)
+fan_index_1=$(expr $fan_index_0 + 1)
+
+export DISPLAY=:0
+export XAUTHORITY=/var/run/lightdm/root/:0
+
+temp=$(nvidia-settings -q "[gpu:$${gpu_index}]/GPUCoreTemp" | grep Attribute | awk '{print $4}' | awk -F. '{print $1}')
+echo "gpu $${gpu_index} temp: $${temp}"
+
+if [ "$${temp}" -gt 55 ]; then
+    nvidia-settings -a "[gpu:$${gpu_index}]/GPUFanControlState=1" -a "[fan:$${fan_index_0}]/GPUTargetFanSpeed=100" -a "[fan:$${fan_index_1}]/GPUTargetFanSpeed=100"
+elif [ "$${temp}" -gt 45 ]; then
+    nvidia-settings -a "[gpu:$${gpu_index}]/GPUFanControlState=1" -a "[fan:$${fan_index_0}]/GPUTargetFanSpeed=60" -a "[fan:$${fan_index_1}]/GPUTargetFanSpeed=60"
+elif [ "$${temp}" -gt 40 ]; then
+    nvidia-settings -a "[gpu:$${gpu_index}]/GPUFanControlState=1" -a "[fan:$${fan_index_0}]/GPUTargetFanSpeed=30" -a "[fan:$${fan_index_1}]/GPUTargetFanSpeed=30"
+else
+    nvidia-settings -a "[gpu:$${gpu_index}]/GPUFanControlState=0"
+fi
+EOF
+chmod +x /var/lib/cron/gpu_fan_control.sh
+cat <<EOF > /etc/systemd/system/gpu-fan-control@.service
+[Unit]
+Description=gpu fan control
+
+[Service]
+Type=simple
+ExecStart=/var/lib/cron/gpu_fan_control.sh %i
+
+[Install]
+WantedBy=default.target
+EOF
+cat <<EOF > /etc/systemd/system/gpu-fan-control@.timer
+[Unit]
+Description=gpu fan control
+
+[Timer]
+OnBootSec=5sec
+OnUnitActiveSec=3sec
+AccuracySec=1sec
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+for index in $(seq 0 ${var.gpu_count - 1}); do
+  systemctl enable --now gpu-fan-control@$${index}.service
+  systemctl enable --now gpu-fan-control@$${index}.timer
+done
+
 # mount nfs mount point
 apt-get update && apt-get install -y nfs-common
 mkdir -p $${mount_point}

@@ -84,3 +84,21 @@ variable "discord_it_event_hook_url" {
 variable "discord_developersio_hook_url" {
   type = string
 }
+
+variable "searxng_workers" {
+  type = number
+  default = 4
+}
+
+variable "searxng_threads" {
+  type = number
+  default = 1
+}
+
+variable "searxng_image_id" {
+  type = string
+}
+
+variable "searxng_flavor_id" {
+  type = string
+}

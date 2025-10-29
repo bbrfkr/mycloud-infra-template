@@ -2,10 +2,10 @@ locals {
   completion_gpu_count   = 1
   additional_gpu_count   = 1
   vllm_gpu_count         = 8
-  vllm_with_flashinfer_image_id = "64c5bcd6-4577-4bc8-895f-eab3acf62220"
+  vllm_with_flashinfer_image_id = "8374c2a5-dca6-4992-af53-a38e7af731c5"
   stable_vllm_image_id   = "04036c92-e690-4354-8802-5ad6903f9749"
   comfyui_gpu_count    = 2
-  comfyui_image_id     = "321692b6-c646-4c5e-9925-5740d88e8cfc"
+  comfyui_image_id     = "79dd2407-d94b-487e-bae9-09f6584e4fb4"
   p1_large_id          = "e80fda3b-b3ff-4e95-96af-8513b7a5e469"
   p1_xlarge_id         = "64295d5b-7e47-415c-813c-85dbf35433ac"
   p1_2xlarge_id        = "0b8bc8af-aea4-4dcc-91ae-c15a5558d2be"

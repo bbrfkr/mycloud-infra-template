@@ -1,4 +1,5 @@
 locals {
+  ubuntu_image_id = "2dac0fd5-8701-4141-9161-8e9d2f31a623"
   docker_image_id = "2bb089f3-e64d-475a-8f7e-75842c9d11a7"
   g1_medium_id = "055dc2d5-ad66-4786-a8b2-003695a62dd5"
   g1_2xlarge_id = "fac70312-023e-4b61-9492-5434704140ab"
@@ -14,8 +15,12 @@ module "home_infra" {
   registry_flavor_id                = local.g1_medium_id
   info_collector_image_id           = local.docker_image_id
   info_collector_flavor_id          = local.g1_medium_id
-  open_webui_image_id               = local.docker_image_id
+  open_webui_image_id               = local.ubuntu_image_id
   open_webui_flavor_id              = local.g1_medium_id
+  searxng_workers                   = 4
+  searxng_threads                   = 1
+  searxng_flavor_id                 = local.g1_2xlarge_id
+  searxng_image_id                  = local.docker_image_id
   openstack_admin_access_key_id     = base64decode(data.openstack_keymanager_secret_v1.openstack_admin_access_key_id.payload)
   openstack_admin_secret_access_key = base64decode(data.openstack_keymanager_secret_v1.openstack_admin_secret_access_key.payload)
   dockerhub_username                = base64decode(data.openstack_keymanager_secret_v1.dockerhub_username.payload)
