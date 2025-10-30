@@ -47,14 +47,9 @@ module "additional" {
   models_config = [
     {
       model_name           = "nomic-ai/nomic-embed-text-v2-moe"
-      vllm_command_args = "--served-model-name bbrfkr-embedding --gpu-memory-utilization 0.40 --runner pooling --convert embed --trust-remote-code --max-model-len 1572864"
+      vllm_command_args = "--served-model-name bbrfkr-embedding --gpu-memory-utilization 0.85 --runner pooling --convert embed --trust-remote-code --max-model-len 1572864"
       port = 8000
-    },
-    {
-      model_name           = "Qwen/Qwen3-Reranker-0.6B"
-      vllm_command_args = "--served-model-name bbrfkr-reranker --gpu-memory-utilization 0.40 --task score --max-model-len 8192"
-      port = 8001
-    },
+    }
   ]
 }
 
