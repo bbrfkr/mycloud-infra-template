@@ -21,3 +21,6 @@ ENV TOFUENV=/home/vscode/.tofuenv
 RUN git clone --depth 1 https://github.com/tofuutils/tofuenv $TOFUENV
 ENV PATH=$TOFUENV/bin:$PATH
 RUN tofuenv use 1.10.6
+
+# create terraform alias
+RUN sudo ln -s /home/vscode/.tofuenv/bin/tofu /usr/bin/terraform

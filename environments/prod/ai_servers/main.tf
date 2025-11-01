@@ -5,7 +5,7 @@ locals {
   vllm_with_flashinfer_image_id = "8374c2a5-dca6-4992-af53-a38e7af731c5"
   stable_vllm_image_id   = "04036c92-e690-4354-8802-5ad6903f9749"
   comfyui_gpu_count    = 2
-  comfyui_image_id     = "79dd2407-d94b-487e-bae9-09f6584e4fb4"
+  comfyui_image_id     = "ce4d7a80-1176-45b0-b9e5-e322b47e14d7"
   p1_large_id          = "e80fda3b-b3ff-4e95-96af-8513b7a5e469"
   p1_xlarge_id         = "64295d5b-7e47-415c-813c-85dbf35433ac"
   p1_2xlarge_id        = "0b8bc8af-aea4-4dcc-91ae-c15a5558d2be"
@@ -83,53 +83,3 @@ module "vllm_1" {
   huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
   vllm_use_flashinfer_mxfp4_bf16_moe = 1
 }
-
-# module "vllm_2" {
-#   source               = "../../../modules/vllm"
-#   environment_name     = data.terraform_remote_state.common.outputs.environment_name
-#   network_id           = data.terraform_remote_state.networking.outputs.all.network_id
-#   bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
-#   external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
-#   flavor_id            = local.p2_4xlarge_id
-#   image_id             = local.stable_vllm_image_id
-#   resource_suffix      = "2"
-#   gpu_count            = local.vllm_gpu_count
-#   gpu_power_limit      = 180
-#   model_name           = "openai/gpt-oss-20b"
-#   vllm_command_args    = "--served-model-name bbrfkr-gpt --tensor-parallel-size ${local.vllm_gpu_count} --max-num-seqs 8 --gpu-memory-utilization 0.85"
-#   huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
-# }
-
-# module "vllm_3" {
-#   source               = "../../../modules/vllm"
-#   environment_name     = data.terraform_remote_state.common.outputs.environment_name
-#   network_id           = data.terraform_remote_state.networking.outputs.all.network_id
-#   bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
-#   external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
-#   flavor_id            = local.p2_2xlarge_id
-#   image_id             = local.stable_vllm_image_id
-#   resource_suffix      = "3"
-#   gpu_count            = local.vllm_gpu_count
-#   gpu_power_limit      = 180
-#   model_name           = "openai/gpt-oss-20b"
-#   # vllm_command_args    = "--served-model-name bbrfkr-gpt --tensor-parallel-size ${local.vllm_gpu_count} --max-num-seqs 8 --gpu-memory-utilization 0.90"
-#   vllm_command_args    = "--invalid-option"
-#   huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
-# }
-
-# module "vllm_4" {
-#   source               = "../../../modules/vllm"
-#   environment_name     = data.terraform_remote_state.common.outputs.environment_name
-#   network_id           = data.terraform_remote_state.networking.outputs.all.network_id
-#   bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
-#   external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
-#   flavor_id            = local.p2_2xlarge_id
-#   image_id             = local.stable_vllm_image_id
-#   resource_suffix      = "4"
-#   gpu_count            = local.vllm_gpu_count
-#   gpu_power_limit      = 180
-#   model_name           = "openai/gpt-oss-20b"
-#   # vllm_command_args    = "--served-model-name bbrfkr-gpt --tensor-parallel-size ${local.vllm_gpu_count} --max-num-seqs 8 --gpu-memory-utilization 0.90"
-#   vllm_command_args    = "--invalid-option"
-#   huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
-# }

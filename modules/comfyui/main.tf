@@ -28,6 +28,11 @@ resource "openstack_networking_port_v2" "comfyui_port" {
   security_group_ids = [openstack_networking_secgroup_v2.comfyui_sg.id]
 }
 
+resource "openstack_blockstorage_volume_v3" "comfyui_python_volume" {
+  name     = "comfyui_python_volume-${var.resource_suffix}"
+  size     = 30
+}
+
 resource "openstack_compute_instance_v2" "comfyui_instance" {
   name      = "${var.environment_name}-comfyui-${var.resource_suffix}"
   flavor_id = var.flavor_id
@@ -39,6 +44,13 @@ resource "openstack_compute_instance_v2" "comfyui_instance" {
     boot_index            = 0
     destination_type      = "local"
     delete_on_termination = true
+  }
+  block_device {
+    uuid                  = openstack_blockstorage_volume_v3.comfyui_python_volume.id
+    source_type           = "volume"
+    boot_index            = 1
+    destination_type      = "volume"
+    delete_on_termination = false
   }
   network {
     port = openstack_networking_port_v2.comfyui_port.id
@@ -109,6 +121,14 @@ for index in $(seq 0 ${var.gpu_count - 1}); do
   systemctl enable --now gpu-fan-control@$${index}.timer
 done
 
+# mount volume
+mkdir -p /python-venv
+lsblk -f /dev/vdb | grep xfs > /dev/null
+if [ $? -ne 0 ] ; then
+    mkfs -t xfs /dev/vdb
+fi
+echo '/dev/vdb /python-venv xfs defaults 0 0' >> /etc/fstab
+
 # mount nfs mount point
 apt-get update && apt-get install -y nfs-common
 
@@ -118,8 +138,23 @@ mkdir -p $${mount_point}
 echo "aimodel-nfs.home.dynamis.bbrfkr.net:$${share_point} $${mount_point} nfs defaults 0 0" >> /etc/fstab
 mount -a
 
+chown ubuntu:ubuntu /python-venv
+
+if [ ! -d "/python-venv/venv" ]; then
+  cat <<EOF | sudo -u ubuntu bash -
+export PATH=/home/ubuntu/.pyenv/shims:$PATH
+python -m venv "/python-venv/venv"
+export PATH=/python-venv/venv/bin:$PATH
+pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129
+pip install comfy-cli
+EOF
+fi
+
 if [ ! -d /home/ubuntu/comfy/ComfyUI ]; then
-  comfy-cli install
+  cat <<EOF | sudo -u ubuntu bash -
+export PATH=/python-venv/venv/bin:$PATH
+comfy-cli install
+EOF
 fi
 
 cat <<EOF > /etc/systemd/system/comfyui.service
@@ -131,7 +166,7 @@ After=network.service
 Type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu
-ExecStart=/bin/bash -c "/home/ubuntu/.pyenv/shims/comfy-cli --skip-prompt install --restore --nvidia && /home/ubuntu/.pyenv/shims/comfy-cli --skip-prompt launch -- --listen 0.0.0.0"
+ExecStart=/bin/bash -c "/python-venv/venv/bin/comfy-cli --skip-prompt install --restore --nvidia && /python-venv/venv/bin/comfy-cli --skip-prompt launch -- --listen 0.0.0.0"
 Restart=yes
 
 [Install]
