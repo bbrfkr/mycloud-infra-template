@@ -145,7 +145,7 @@ if [ ! -d "/python-venv/venv" ]; then
 export PATH=/home/ubuntu/.pyenv/shims:$PATH
 python -m venv "/python-venv/venv"
 export PATH=/python-venv/venv/bin:$PATH
-pip install torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 --index-url https://download.pytorch.org/whl/cu129
+pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129
 pip install comfy-cli
 EOF
 fi
