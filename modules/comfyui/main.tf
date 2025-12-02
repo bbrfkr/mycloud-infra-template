@@ -132,7 +132,7 @@ echo '/dev/vdb /python-venv xfs defaults 0 0' >> /etc/fstab
 # mount nfs mount point
 apt-get update && apt-get install -y nfs-common
 
-share_point=/share/comfyui
+share_point=${var.nfs_share_point}
 mount_point=/home/ubuntu/comfy
 mkdir -p $${mount_point}
 echo "aimodel-nfs.home.dynamis.bbrfkr.net:$${share_point} $${mount_point} nfs defaults 0 0" >> /etc/fstab

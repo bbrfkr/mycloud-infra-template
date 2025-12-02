@@ -4,5 +4,5 @@ resource "openstack_dns_recordset_v2" "nas_rs" {
   description = "for home nas"
   ttl         = 600
   type        = "A"
-  records     = ["192.168.1.20"]
+  records     = ["192.168.200.1"]
 }

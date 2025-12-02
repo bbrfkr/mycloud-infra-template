@@ -4,7 +4,7 @@ locals {
   photo_prism_site_url = "https://photo-prism.external.dynamis.bbrfkr.net/"
 }
 
-module "completion" {
+module "photo_prism" {
   source               = "../../../modules/docker_app_prod"
   environment_name     = data.terraform_remote_state.common.outputs.environment_name
   project_id           = data.terraform_remote_state.global_common.outputs.project_id
