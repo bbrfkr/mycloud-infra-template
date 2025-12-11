@@ -2,7 +2,7 @@ locals {
   completion_gpu_count   = 1
   additional_gpu_count   = 1
   vllm_gpu_count         = 8
-  vllm_with_flashinfer_image_id = "8374c2a5-dca6-4992-af53-a38e7af731c5"
+  vllm_with_flashinfer_image_id = "858eb95a-f08e-40a6-88ad-650c407c6b1e"
   stable_vllm_image_id   = "04036c92-e690-4354-8802-5ad6903f9749"
   comfyui_gpu_count    = 2
   comfyui_image_id     = "ce4d7a80-1176-45b0-b9e5-e322b47e14d7"
