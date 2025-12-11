@@ -85,55 +85,18 @@ module "comfyui_3d" {
   huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
 }
 
-module "vllm_1" {
-  source               = "../../../modules/vllm"
+module "ray_vllm" {
+  source               = "../../../modules/ray-vllm"
   environment_name     = data.terraform_remote_state.common.outputs.environment_name
   network_id           = data.terraform_remote_state.networking.outputs.all.network_id
   bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
   external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
   flavor_id            = local.p2_8xlarge_id
   image_id             = local.vllm_with_flashinfer_image_id
-  resource_suffix      = "1"
   gpu_count            = 8
   gpu_power_limit      = 150
-  model_name           = "openai/gpt-oss-120b"
-  vllm_command_args    = "--served-model-name bbrfkr-llm-large --tensor-parallel-size 8 --max-model-len 131072 --max-num-seqs 2 --gpu-memory-utilization 0.85 --async-scheduling"
-  huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
-  vllm_use_flashinfer_mxfp4_bf16_moe = 1
-}
-
-module "vllm_2" {
-  source               = "../../../modules/vllm"
-  environment_name     = data.terraform_remote_state.common.outputs.environment_name
-  network_id           = data.terraform_remote_state.networking.outputs.all.network_id
-  bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
-  external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
-  flavor_id            = local.p2_2xlarge_id
-  image_id             = local.vllm_with_flashinfer_image_id
-  resource_suffix      = "2"
-  gpu_count            = 2
-  gpu_power_limit      = 150
-  model_name           = "openai/gpt-oss-20b"
-  vllm_command_args    = "--served-model-name bbrfkr-llm-small --tensor-parallel-size 2 --max-model-len 131072 --max-num-seqs 2 --gpu-memory-utilization 0.85 --async-scheduling"
-  huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
-  vllm_use_flashinfer_mxfp4_bf16_moe = 1
-}
-
-module "vllm_3" {
-  source               = "../../../modules/vllm"
-  environment_name     = data.terraform_remote_state.common.outputs.environment_name
-  network_id           = data.terraform_remote_state.networking.outputs.all.network_id
-  bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
-  external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
-  flavor_id            = local.p2_4xlarge_id
-  image_id             = local.vllm_with_flashinfer_image_id
-  resource_suffix      = "3"
-  gpu_count            = 4
-  gpu_power_limit      = 150
-  model_name           = "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
-  vllm_command_args    = "--served-model-name bbrfkr-llm-code --tensor-parallel-size 4 --max-model-len 153600 --max-num-seqs 2 --gpu-memory-utilization 0.85 --enable-expert-parallel --tool-call-parser qwen3_coder --enable-auto-tool-choice"
-  huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
-  vllm_use_flashinfer_mxfp4_bf16_moe = 1
+  model_name           = "dummy"
+  ray_vllm_node_count  = 2 
 }
 
 module "litellm" {
