@@ -137,6 +137,9 @@ mkdir -p $${mount_point}
 echo "aimodel-nfs.home.dynamis.bbrfkr.net:$${share_point} $${mount_point} nfs defaults 0 0" >> /etc/fstab
 mount -a
 
+# hotfix mistral tool call
+pip install -U "git+https://github.com/bbrfkr/mistral-common@main"
+
 # configure vllm
 cat <<EOF > /etc/systemd/system/vllm.service
 [Unit]
