@@ -48,5 +48,5 @@ variable "huggingface_hf_token" {
 }
 
 variable "nfs_share_point" {
-  type    = string  
+  type = string
 }

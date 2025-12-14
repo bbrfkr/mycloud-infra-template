@@ -29,8 +29,8 @@ resource "openstack_networking_port_v2" "comfyui_port" {
 }
 
 resource "openstack_blockstorage_volume_v3" "comfyui_python_volume" {
-  name     = "comfyui_python_volume-${var.resource_suffix}"
-  size     = 30
+  name = "comfyui_python_volume-${var.resource_suffix}"
+  size = 30
 }
 
 resource "openstack_compute_instance_v2" "comfyui_instance" {

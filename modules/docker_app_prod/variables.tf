@@ -44,6 +44,6 @@ variable "docker_app_tcp_ports" {
 }
 
 variable "user_data" {
-  type = string
-  default = ""  
+  type    = string
+  default = ""
 }

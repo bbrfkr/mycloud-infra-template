@@ -44,6 +44,6 @@ variable "docker_app_tcp_ports" {
 }
 
 variable "terminate_instance" {
-  type = bool
-  default = false  
+  type    = bool
+  default = false
 }

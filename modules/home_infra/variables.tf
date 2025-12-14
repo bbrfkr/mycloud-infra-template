@@ -86,12 +86,12 @@ variable "discord_developersio_hook_url" {
 }
 
 variable "searxng_workers" {
-  type = number
+  type    = number
   default = 4
 }
 
 variable "searxng_threads" {
-  type = number
+  type    = number
   default = 1
 }
 

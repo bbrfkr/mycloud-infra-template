@@ -50,9 +50,9 @@ variable "huggingface_hf_token" {
 variable "models_config" {
   type = list(
     object({
-      model_name = string
+      model_name        = string
       vllm_command_args = string
-      port = number
+      port              = number
     })
   )
 }

@@ -29,7 +29,7 @@ resource "openstack_networking_port_v2" "ray_vllm_head_port" {
 }
 
 resource "openstack_networking_port_v2" "ray_vllm_worker_port" {
-  for_each = toset([for index in range(var.ray_vllm_node_count - 1) : tostring(index)])
+  for_each           = toset([for index in range(var.ray_vllm_node_count - 1) : tostring(index)])
   network_id         = var.network_id
   security_group_ids = [openstack_networking_secgroup_v2.ray_vllm_sg.id]
 }
@@ -129,7 +129,7 @@ EOS
 }
 
 resource "openstack_compute_instance_v2" "ray_vllm_worker_instance" {
-  for_each = openstack_networking_port_v2.ray_vllm_worker_port
+  for_each  = openstack_networking_port_v2.ray_vllm_worker_port
   name      = "${var.environment_name}-ray-worker-${each.key}"
   flavor_id = var.flavor_id
   key_pair  = var.key_pair_name

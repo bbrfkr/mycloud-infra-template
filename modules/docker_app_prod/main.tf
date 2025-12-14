@@ -51,7 +51,7 @@ resource "openstack_compute_instance_v2" "docker_app_instance" {
     destination_type      = "local"
     delete_on_termination = true
   }
-  dynamic block_device {
+  dynamic "block_device" {
     for_each = var.volume_size == 0 ? [] : [0]
     content {
       uuid                  = openstack_blockstorage_volume_v3.docker_app_volume[0].id

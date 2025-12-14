@@ -57,11 +57,11 @@ variable "ray_vllm_nccl_p2p_disable" {
 }
 
 variable "ray_vllm_use_flashinfer_mxfp4_bf16_moe" {
-  type = number
+  type    = number
   default = 0
 }
 
 variable "ray_vllm_node_count" {
-  type = number
+  type    = number
   default = 2
 }

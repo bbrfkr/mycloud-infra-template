@@ -139,7 +139,7 @@ Restart=yes
 WantedBy=multi-user.target
 EOF
 EOS
-])}
+  ])}
 
 systemctl daemon-reload
 ${join("\n", [for index, config in var.models_config : <<EOS
