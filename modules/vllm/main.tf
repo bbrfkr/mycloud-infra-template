@@ -138,7 +138,7 @@ echo "aimodel-nfs.home.dynamis.bbrfkr.net:$${share_point} $${mount_point} nfs de
 mount -a
 
 # hotfix mistral tool call
-/home/ubuntu/.pyenv/shims/pip install -U "git+https://github.com/bbrfkr/mistral-common@main"
+/home/ubuntu/.pyenv/shims/pip install -e "git+https://github.com/bbrfkr/mistral-common@main#egg=mistral_common"
 
 # configure vllm
 cat <<EOF > /etc/systemd/system/vllm.service

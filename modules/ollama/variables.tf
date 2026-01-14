@@ -33,3 +33,13 @@ variable "resource_suffix" {
   type    = string
   default = ""
 }
+
+variable "gpu_count" {
+  type = number
+  default = 1
+}
+
+variable "gpu_power_limit" {
+  type = number
+  default = 150
+}

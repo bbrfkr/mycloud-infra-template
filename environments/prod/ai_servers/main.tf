@@ -4,6 +4,7 @@ locals {
   vllm_gpu_count         = 8
   vllm_with_flashinfer_image_id = "858eb95a-f08e-40a6-88ad-650c407c6b1e"
   vllm_with_flashinfer_nightly_image_id = "fc3f876f-378b-4ef7-8685-eb298704a266"
+  gpu_image_id = "4e186054-e88b-4aa0-ae7e-c26863c21f5e"
   stable_vllm_image_id   = "04036c92-e690-4354-8802-5ad6903f9749"
   comfyui_gpu_count    = 2
   comfyui_image_id     = "ce4d7a80-1176-45b0-b9e5-e322b47e14d7"
@@ -16,6 +17,8 @@ locals {
   p2_8xlarge_id        = "ad868ad4-124b-44de-a172-50141315d9ea"
   pr2_xlarge_id        = "ad06050a-19dd-4dc5-8aaf-eb4c59ea18b5"
   g1_medium_id = "055dc2d5-ad66-4786-a8b2-003695a62dd5"
+  g1_2xlarge_id = "fac70312-023e-4b61-9492-5434704140ab"
+  g1_6xlarge_id = "3fd44000-b818-44c1-a8e9-0716e848f1e2"
   docker_image_id = "2bb089f3-e64d-475a-8f7e-75842c9d11a7"
 }
 
@@ -86,38 +89,30 @@ module "comfyui_3d" {
   huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
 }
 
-module "vllm_1" {
-  source               = "../../../modules/vllm"
+module "ollama_1" {
+  source               = "../../../modules/ollama"
   environment_name     = data.terraform_remote_state.common.outputs.environment_name
   network_id           = data.terraform_remote_state.networking.outputs.all.network_id
   bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
   external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
   flavor_id            = local.p2_8xlarge_id
-  image_id             = local.vllm_with_flashinfer_nightly_image_id
+  image_id             = local.gpu_image_id
   resource_suffix      = "1"
   gpu_count            = 8
   gpu_power_limit      = 150
-  model_name           = "mistralai/Devstral-Small-2-24B-Instruct-2512"
-  vllm_command_args    = "--served-model-name bbrfkr-llm-code --tensor-parallel-size 8 --max-model-len 262144 --max-num-seqs 2 --gpu-memory-utilization 0.90 --tool-call-parser mistral --enable-auto-tool-choice"
-  huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
-  vllm_use_flashinfer_mxfp4_bf16_moe = 1
 }
 
-module "vllm_2" {
-  source               = "../../../modules/vllm"
+module "ollama_2" {
+  source               = "../../../modules/ollama"
   environment_name     = data.terraform_remote_state.common.outputs.environment_name
   network_id           = data.terraform_remote_state.networking.outputs.all.network_id
   bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
   external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
   flavor_id            = local.p2_4xlarge_id
-  image_id             = local.vllm_with_flashinfer_image_id
+  image_id             = local.gpu_image_id
   resource_suffix      = "2"
   gpu_count            = 4
   gpu_power_limit      = 150
-  model_name           = "openai/gpt-oss-20b"
-  vllm_command_args    = "--served-model-name bbrfkr-llm-general --tensor-parallel-size 4 --max-model-len 131072 --max-num-seqs 2 --gpu-memory-utilization 0.90 --async-scheduling"
-  huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
-  vllm_use_flashinfer_mxfp4_bf16_moe = 1
 }
 
 module "litellm" {
@@ -127,7 +122,7 @@ module "litellm" {
   network_id           = data.terraform_remote_state.networking.outputs.all.network_id
   bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
   external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
-  flavor_id            = local.g1_medium_id
+  flavor_id            = local.g1_2xlarge_id
   image_id             = local.docker_image_id
   app_name             = "litellm"
   docker_app_tcp_ports = ["4000"]
