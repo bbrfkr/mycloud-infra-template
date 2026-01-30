@@ -13,6 +13,16 @@ resource "openstack_networking_secgroup_rule_v2" "searxng_sg_rule_2" {
   security_group_id = openstack_networking_secgroup_v2.searxng_sg.id
 }
 
+resource "openstack_networking_secgroup_rule_v2" "searxng_sg_rule_3" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 3000
+  port_range_max    = 3000
+  remote_ip_prefix  = "0.0.0.0/0"
+  security_group_id = openstack_networking_secgroup_v2.searxng_sg.id
+}
+
 resource "openstack_networking_secgroup_rule_v2" "searxng_sg_rule_99" {
   direction         = "ingress"
   ethertype         = "IPv4"
