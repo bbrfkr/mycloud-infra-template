@@ -6,7 +6,7 @@ locals {
   vllm_with_flashinfer_v0_15_1_image_id = "6d8737a8-d63a-427b-9c8e-67fd1bb7692d"
   gpu_image_id = "4e186054-e88b-4aa0-ae7e-c26863c21f5e"
   comfyui_gpu_count    = 2
-  comfyui_image_id     = "ce4d7a80-1176-45b0-b9e5-e322b47e14d7"
+  comfyui_image_id     = "79dd2407-d94b-487e-bae9-09f6584e4fb4"
   p1_large_id          = "e80fda3b-b3ff-4e95-96af-8513b7a5e469"
   p1_xlarge_id         = "64295d5b-7e47-415c-813c-85dbf35433ac"
   p1_2xlarge_id        = "0b8bc8af-aea4-4dcc-91ae-c15a5558d2be"
@@ -88,38 +88,30 @@ module "comfyui_3d" {
   huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
 }
 
-module "vllm_1" {
-  source               = "../../../modules/vllm"
+module "ollama_1" {
+  source               = "../../../modules/ollama"
   environment_name     = data.terraform_remote_state.common.outputs.environment_name
   network_id           = data.terraform_remote_state.networking.outputs.all.network_id
   bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
   external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
   flavor_id            = local.p2_8xlarge_id
-  image_id             = local.vllm_with_flashinfer_v0_15_1_image_id
+  image_id             = local.gpu_image_id
   resource_suffix      = "1"
   gpu_count            = 8
   gpu_power_limit      = 150
-  model_name           = "" # QuantTrio/GLM-4.7-AWQ
-  vllm_command_args    = ""
-  huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
-  vllm_use_flashinfer_mxfp4_bf16_moe = 1
 }
 
-module "vllm_2" {
-  source               = "../../../modules/vllm"
+module "ollama_2" {
+  source               = "../../../modules/ollama"
   environment_name     = data.terraform_remote_state.common.outputs.environment_name
   network_id           = data.terraform_remote_state.networking.outputs.all.network_id
   bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
   external_subnet_name = data.terraform_remote_state.global_common.outputs.external_subnet_name
-  flavor_id            = local.p2_8xlarge_id
-  image_id             = local.vllm_with_flashinfer_v0_15_1_image_id
+  flavor_id            = local.p2_4xlarge_id
+  image_id             = local.gpu_image_id
   resource_suffix      = "2"
-  gpu_count            = 8
+  gpu_count            = 4
   gpu_power_limit      = 150
-  model_name           = "" # QuantTrio/GLM-4.7-AWQ
-  vllm_command_args    = ""
-  huggingface_hf_token = base64decode(data.openstack_keymanager_secret_v1.huggingface_hf_token.payload)
-  vllm_use_flashinfer_mxfp4_bf16_moe = 1
 }
 
 module "litellm" {
