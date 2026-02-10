@@ -6,7 +6,7 @@ locals {
   vllm_with_flashinfer_v0_15_1_image_id = "6d8737a8-d63a-427b-9c8e-67fd1bb7692d"
   gpu_image_id = "4e186054-e88b-4aa0-ae7e-c26863c21f5e"
   comfyui_gpu_count    = 2
-  comfyui_image_id     = "ce4d7a80-1176-45b0-b9e5-e322b47e14d7"
+  comfyui_image_id     = "79dd2407-d94b-487e-bae9-09f6584e4fb4"
   p1_large_id          = "e80fda3b-b3ff-4e95-96af-8513b7a5e469"
   p1_xlarge_id         = "64295d5b-7e47-415c-813c-85dbf35433ac"
   p1_2xlarge_id        = "0b8bc8af-aea4-4dcc-91ae-c15a5558d2be"
