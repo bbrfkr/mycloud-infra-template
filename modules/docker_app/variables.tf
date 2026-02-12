@@ -47,3 +47,8 @@ variable "terminate_instance" {
   type    = bool
   default = false
 }
+
+variable "user_data" {
+  type = string
+  default = ""
+}

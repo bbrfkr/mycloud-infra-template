@@ -12,4 +12,13 @@ module "dify_docker" {
   app_name             = "dify-docker"
   docker_app_tcp_ports = ["80"]
   bastion_sg_id        = data.terraform_remote_state.bastion.outputs.all.bastion_sg_id
+  user_data = <<EOD
+# configure docker mirror
+cat <<EOF > /etc/docker/daemon.json
+{
+  "registry-mirrors": ["https://registry.home.dynamis.bbrfkr.net"]
+}
+EOF
+systemctl restart docker
+EOD
 }

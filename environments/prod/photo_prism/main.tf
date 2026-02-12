@@ -37,6 +37,14 @@ echo '/dev/vdb /var/lib/photo_prism xfs defaults 0 0' >> /etc/fstab
 
 mount -a
 
+# configure docker mirror
+cat <<EOF > /etc/docker/daemon.json
+{
+  "registry-mirrors": ["https://registry.home.dynamis.bbrfkr.net"]
+}
+EOF
+systemctl restart docker
+
 # configure photo prism
 mkdir -p /var/lib/photo_prism
 cat <<EOF > /var/lib/photo_prism/compose.yaml

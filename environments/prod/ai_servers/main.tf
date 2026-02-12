@@ -147,6 +147,14 @@ echo '/dev/vdb /var/lib/litellm xfs defaults 0 0' >> /etc/fstab
 
 mount -a
 
+# configure docker mirror
+cat <<EOF > /etc/docker/daemon.json
+{
+  "registry-mirrors": ["https://registry.home.dynamis.bbrfkr.net"]
+}
+EOF
+systemctl restart docker
+
 # configure litellm
 cat <<EOF > /var/lib/litellm/.env
 LITELLM_SALT_KEY="sk-1234"

@@ -65,6 +65,7 @@ resource "openstack_compute_instance_v2" "docker_app_instance" {
       image_id,
     ]
   }
+  user_data = var.user_data
 }
 
 resource "openstack_networking_floatingip_associate_v2" "docker_app_fip_associate" {
