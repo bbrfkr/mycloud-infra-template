@@ -7,39 +7,9 @@ resource "openstack_networking_secgroup_rule_v2" "vllm_sg_rule_1" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
-  port_range_min    = 8000
-  port_range_max    = 8000
+  port_range_min    = 1
+  port_range_max    = 65535
   remote_ip_prefix  = "0.0.0.0/0"
-  security_group_id = openstack_networking_secgroup_v2.vllm_sg.id
-}
-
-resource "openstack_networking_secgroup_rule_v2" "vllm_sg_rule_2" {
-  direction         = "ingress"
-  ethertype         = "IPv4"
-  protocol          = "tcp"
-  port_range_min    = 8265
-  port_range_max    = 8265
-  remote_ip_prefix  = "0.0.0.0/0"
-  security_group_id = openstack_networking_secgroup_v2.vllm_sg.id
-}
-
-resource "openstack_networking_secgroup_rule_v2" "vllm_sg_rule_3" {
-  direction         = "ingress"
-  ethertype         = "IPv4"
-  protocol          = "tcp"
-  port_range_min    = 6379
-  port_range_max    = 6379
-  remote_ip_prefix  = "0.0.0.0/0"
-  security_group_id = openstack_networking_secgroup_v2.vllm_sg.id
-}
-
-resource "openstack_networking_secgroup_rule_v2" "vllm_sg_rule_99" {
-  direction         = "ingress"
-  ethertype         = "IPv4"
-  protocol          = "tcp"
-  port_range_min    = 22
-  port_range_max    = 22
-  remote_group_id   = var.bastion_sg_id
   security_group_id = openstack_networking_secgroup_v2.vllm_sg.id
 }
 
