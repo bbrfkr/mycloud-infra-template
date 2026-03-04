@@ -37,67 +37,67 @@ resource "openstack_blockstorage_volume_v3" "open_webui_data_volume" {
   size = 30
 }
 
-# resource "openstack_compute_instance_v2" "open_webui_instance" {
-#   name      = "${var.environment_name}-open-webui"
-#   image_id  = var.open_webui_image_id
-#   flavor_id = var.open_webui_flavor_id
-#   key_pair  = var.key_pair_name
-#   block_device {
-#     uuid                  = var.open_webui_image_id
-#     source_type           = "image"
-#     boot_index            = 0
-#     destination_type      = "local"
-#     delete_on_termination = true
-#   }
-#   block_device {
-#     uuid                  = openstack_blockstorage_volume_v3.open_webui_data_volume.id
-#     source_type           = "volume"
-#     boot_index            = 1
-#     destination_type      = "volume"
-#     delete_on_termination = false
-#   }
-#   network {
-#     port = openstack_networking_port_v2.open_webui_port.id
-#   }
-#   user_data = <<EOS
-# #!/bin/sh
-# export DEBIAN_FRONTEND=noninteractive
+resource "openstack_compute_instance_v2" "open_webui_instance" {
+  name      = "${var.environment_name}-open-webui"
+  image_id  = var.open_webui_image_id
+  flavor_id = var.open_webui_flavor_id
+  key_pair  = var.key_pair_name
+  block_device {
+    uuid                  = var.open_webui_image_id
+    source_type           = "image"
+    boot_index            = 0
+    destination_type      = "local"
+    delete_on_termination = true
+  }
+  block_device {
+    uuid                  = openstack_blockstorage_volume_v3.open_webui_data_volume.id
+    source_type           = "volume"
+    boot_index            = 1
+    destination_type      = "volume"
+    delete_on_termination = false
+  }
+  network {
+    port = openstack_networking_port_v2.open_webui_port.id
+  }
+  user_data = <<EOS
+#!/bin/sh
+export DEBIAN_FRONTEND=noninteractive
 
-# # mount volume
-# lsblk -f /dev/vdb | grep xfs > /dev/null
-# if [ $? -ne 0 ] ; then
-#     mkfs -t xfs /dev/vdb
-# fi
-# mkdir -p /var/lib/open-webui
-# echo '/dev/vdb /var/lib/open-webui xfs defaults 0 0' >> /etc/fstab
-# mount -a
+# mount volume
+lsblk -f /dev/vdb | grep xfs > /dev/null
+if [ $? -ne 0 ] ; then
+    mkfs -t xfs /dev/vdb
+fi
+mkdir -p /var/lib/open-webui
+echo '/dev/vdb /var/lib/open-webui xfs defaults 0 0' >> /etc/fstab
+mount -a
 
-# apt-get update && apt-get install -y python3-venv python3-pip
-# if [ ! -d /var/lib/open-webui/venv ] ; then
-#   python3 -m venv /var/lib/open-webui/venv
-#   /var/lib/open-webui/venv/bin/pip install open-webui
-# fi
+apt-get update && apt-get install -y python3-venv python3-pip
+if [ ! -d /var/lib/open-webui/venv ] ; then
+  python3 -m venv /var/lib/open-webui/venv
+  /var/lib/open-webui/venv/bin/pip install open-webui
+fi
 
-# # configure open-webui
-# cat <<EOF > /etc/systemd/system/open-webui.service
-# [Unit]
-# Description=Open WebUI
-# After=network.service
+# configure open-webui
+cat <<EOF > /etc/systemd/system/open-webui.service
+[Unit]
+Description=Open WebUI
+After=network.service
 
-# [Service]
-# Type=simple
-# User=root
-# Environment=DATA_DIR=/var/lib/open-webui/data
-# ExecStart=/bin/bash -c "/var/lib/open-webui/venv/bin/open-webui serve"
-# Restart=yes
+[Service]
+Type=simple
+User=root
+Environment=DATA_DIR=/var/lib/open-webui/data
+ExecStart=/bin/bash -c "/var/lib/open-webui/venv/bin/open-webui serve"
+Restart=yes
 
-# [Install]
-# WantedBy=multi-user.target
-# EOF
-# systemctl daemon-reload
-# systemctl enable --now open-webui
-# EOS
-# }
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+systemctl enable --now open-webui
+EOS
+}
 
 resource "openstack_networking_floatingip_associate_v2" "open_webui_fip_associate" {
   floating_ip = openstack_networking_floatingip_v2.open_webui_fip.address
