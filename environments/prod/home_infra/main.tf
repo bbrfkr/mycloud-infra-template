@@ -1,6 +1,6 @@
 locals {
-  ubuntu_image_id = "2dac0fd5-8701-4141-9161-8e9d2f31a623"
-  docker_image_id = "2bb089f3-e64d-475a-8f7e-75842c9d11a7"
+  ubuntu_image_id = "2ef42a53-4616-4a9f-8e9a-1116d807fdce"
+  docker_image_id = "aa917e3f-fec3-43c0-8a4f-953660d36ad5"
   g1_medium_id = "055dc2d5-ad66-4786-a8b2-003695a62dd5"
   g1_2xlarge_id = "fac70312-023e-4b61-9492-5434704140ab"
 }

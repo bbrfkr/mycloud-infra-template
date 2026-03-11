@@ -1,6 +1,6 @@
 locals {
   g1_medium_id = "055dc2d5-ad66-4786-a8b2-003695a62dd5"
-  docker_image_id = "2bb089f3-e64d-475a-8f7e-75842c9d11a7"
+  docker_image_id = "aa917e3f-fec3-43c0-8a4f-953660d36ad5"
   photo_prism_site_url = "https://photo-prism.external.dynamis.bbrfkr.net/"
 }
 
@@ -23,10 +23,10 @@ export DEBIAN_FRONTEND=noninteractive
 # mount nfs share and volume
 apt-get update && apt-get install -y nfs-common
 
-share_point=/share/comfyui
+share_point=/share/filesrv/comfyui
 mount_point=/var/lib/comfyui
 mkdir -p $${mount_point}
-echo "aimodel-nfs.home.dynamis.bbrfkr.net:$${share_point} $${mount_point} nfs defaults 0 0" >> /etc/fstab
+echo "aimodel-nfs-02.home.dynamis.bbrfkr.net:$${share_point} $${mount_point} nfs defaults 0 0" >> /etc/fstab
 
 mkdir -p /var/lib/photo_prism
 lsblk -f /dev/vdb | grep xfs > /dev/null
