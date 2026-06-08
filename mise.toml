@@ -1,3 +1,7 @@
 [tools]
 opentofu = "1.12.1"
 python = "3.14"
+uv = "latest"
+
+[tasks]
+setup = "uv venv && uv pip install openstackclient python-barbicanclient python-designateclient python-heatclient python-magnumclient python-manilaclient python-octaviaclient python-troveclient awscli_plugin_endpoint"
